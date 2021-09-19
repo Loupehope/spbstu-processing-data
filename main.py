@@ -2,6 +2,7 @@
 from Models.LinearModel import *
 from Models.ExponentialModel import *
 from Models.RandomModel import *
+from Models.PrimitiveRandomModel import *
 
 # Drivers
 from Drivers.DisplayDriver import *
@@ -36,7 +37,7 @@ second = ModelDriver.trend([
     LinearModel(5, 3, 700, 1000)
 ])
 
-second = ModelDriver.multi(second, RandomModel(0, 1, 0, 1000).trend())
+second = ModelDriver.multi(second, PrimitiveRandomModel(0, 1, 0, 1000).trend())
 
 # Третий график
 third = ModelDriver.trend([
