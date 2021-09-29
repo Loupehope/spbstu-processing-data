@@ -12,6 +12,7 @@ class DisplayDriver:
         self.fig = Figure(figsize=(8, 8))
         self.fig.subplots_adjust(wspace=0.5, hspace=0.5)
         self.plot_index = 1
+        self.size = self.fig.get_size_inches() * self.fig.dpi
 
     def plot(self, title, data, x_label="t", y_label="x(t)"):
         x_array = data[0]
