@@ -37,8 +37,6 @@ def on_click(event):
             draw_info("Third graph", third_analyze.full_info())
         elif event.x > x and event.y < y:
             draw_info("Forth graph", forth_analyze.full_info())
-    else:
-        print('Clicked ouside axes bounds but inside plot window')
 
 
 # Устанавливаем окно и обьект графиков
@@ -52,14 +50,20 @@ display_model.fig.canvas.callbacks.connect('button_press_event', on_click)
 
 # Первый график
 first = ModelDriver.trend([
-    LinearModel(1, 2, 0, 1000), # Линейный восходящий
+    LinearModel(1, 2, 0, 250), # Линейный восходящий
+    LinearModel(-1, 2, 250, 500), # Линейный нисходящий
+    ExponentialModel(-0.02, 0.01, 500, 750), # Экспонента восходящая
+    ExponentialModel(0.02, 2, 750, 1000), # Экспонента нисходящая
 ])
-# first = ModelDriver.multi(second, RandomModel(0, 1, 0, 1000).trend())
+
+# first = ModelDriver.multi(first, RandomModel(0, 1, 0, 1000).trend())
 first_analyze = AnalyzeModel(first)
 
 # Второй график
 second = ModelDriver.trend([
-    LinearModel(-1, 2, 0, 1000), # Линейный восходящий
+    RandomModel(0, 1, 0, 450),  # Встроенный рандом
+    LinearModel(0, 1, 450, 550),  # Разделитель
+    PrimitiveRandomModel(0, 1, 550, 1000),  # Мой рандом
 ])
 
 # second = ModelDriver.multi(second, PrimitiveRandomModel(0, 1, 0, 1000).trend())
@@ -72,16 +76,13 @@ third = ModelDriver.trend([
     LinearModel(5, 3, 600, 700),
     ExponentialModel(-0.02, 0.01, 700, 1000),
 ])
-
-# third = ModelDriver.add(third, RandomModel(0, 1, 0, 1000, 100).trend())
+# third = ModelDriver.multi(third, RandomModel(0, 1, 0, 1000, 100).trend())
+third = ModelDriver.add(third, RandomModel(0, 1, 0, 1000, 100).trend())
 third_analyze = AnalyzeModel(third)
 
 # Четвертый график
 forth = ModelDriver.trend([
-    ExponentialModel(0.02, 2, 0, 300),
-    ExponentialModel(-0.02, 0.02, 300, 500),
-    ExponentialModel(-0.02, 0.02, 500, 700),
-    ExponentialModel(0.02, 4, 700, 1000),
+    RandomModel(0, 1, 0, 10000)
 ])
 
 # forth = ModelDriver.multi(forth, RandomModel(0, 1, 0, 1000).trend())
