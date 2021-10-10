@@ -1,10 +1,16 @@
-import time
+import math
 
 
-class PrimitiveRandomModel:
+class GarmonikModel:
+
+    @staticmethod
+    def simplified(a, b, n, dt=1):
+        return GarmonikModel(a, b, 1, dt, 0, n)
 
     # Initialization
-    def __init__(self, a, b, n_from, n_to, scale=1, dt=1):
+    # a - A1
+    # b - f1
+    def __init__(self, a, b, n_from, n_to, scale=100, dt=1):
         self.a = a
         self.b = b
         self.scale = scale
@@ -13,7 +19,7 @@ class PrimitiveRandomModel:
         self.n_to = n_to
 
     # Trend
-    def trend(self, previous_x=None, previous_y=None):
+    def trend(self, previous_x, previous_y):
         x_array = []
         y_array = []
         x = 0
@@ -23,14 +29,8 @@ class PrimitiveRandomModel:
         else:
             dy = self.scale * self.b - previous_y
 
-        if previous_x is None:
-            previous_x = 0
-
         for i in range(self.n_from, self.n_to):
-            modulus = ((time.monotonic_ns() * 21448367) % 5343345) / 2147483647
-            tik = (self.b - self.a) * modulus * 400 + self.a
-
-            y = self.scale * tik
+            y = self.scale * self.a * math.sin(2 * math.pi * self.b * i * self.dt)
             x_array.append(x + previous_x)
             y_array.append(y - dy)
             x += self.dt

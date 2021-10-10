@@ -17,7 +17,7 @@ class AnalyzeModel:
         self.fasym_coef = self.asym_coef()
         self.fexc = self.exc()
         self.fexc_coef = self.exc_coef()
-        self.stationarity = self.diff(stationarity_m)
+        self.stationarity = self.calc_stationarity(stationarity_m)
 
     def min(self):
         return np.min(self.data_y)
@@ -64,7 +64,8 @@ class AnalyzeModel:
     def exc_coef(self):
         return (self.fexc / (self.fstd ** 4)) - 3
 
-    def diff(self, m):
+    # Стационарность
+    def calc_stationarity(self, m):
         if m is None:
             return False
 
@@ -93,6 +94,41 @@ class AnalyzeModel:
 
         return stationarity
 
+    # Автокорреляционная функция
+    def auto_corr_array(self):
+        auto_array = []
+
+        def auto_corr(shift):
+            auto_corr_value = 0
+
+            for j in range(len(self.data_y) - shift):
+                temp = (self.data_y[j] - self.fmean) * (self.data_y[j + shift] - self.fmean)
+                auto_corr_value = auto_corr_value + temp
+            return round(auto_corr_value / (self.fvar * len(self.data_y)), 3)
+
+        for i in range(len(self.data_y)):
+            auto_array.append(auto_corr(i))
+
+        return [self.data_x, auto_array]
+
+    def n_auto_corr_array(self):
+        auto_array = []
+
+        def auto_corr(shift):
+            auto_corr_value = 0
+
+            for j in range(len(self.data_y) - shift):
+                temp = (self.data_y[j] - self.fmean) * (self.data_y[j + shift] - self.fmean)
+                auto_corr_value = auto_corr_value + temp
+            return round(auto_corr_value / len(self.data_y), 3)
+
+        for i in range(len(self.data_y)):
+            auto_array.append(auto_corr(i))
+
+        return [self.data_x, auto_array]
+
+    # -------------------
+    # Вывод информации о тренде
     def full_info(self):
         if self.stationarity:
             is_stationarity = "да"
