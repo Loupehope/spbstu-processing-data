@@ -57,6 +57,8 @@ def on_click(event):
         spec_driver.window.mainloop()
 
 
+random.seed(time.monotonic_ns())
+
 # Устанавливаем окно и обьект графиков
 window = tk.Tk()
 window.title("Методы обработки экспериментальных данных")
@@ -67,26 +69,44 @@ display_model.fig.canvas.callbacks.connect('button_press_event', on_click)
 # Считаем данные
 
 # Первый график
+# Гармоника
 first = MultyGarmonikModel.trend([
         GarmonikModel(10, 3, 0, 1000, 1, 1 / 1000).trend(0, 0),
         GarmonikModel(100, 37, 0, 1000, 1, 1 / 1000).trend(0, 0),
         GarmonikModel(15, 173, 0, 1000, 1, 1 / 1000).trend(0, 0)
     ])
 
+# Тренд
+# first = ModelDriver.trend([
+#     ExponentialModel(0.01, 3, 0, 1000, 1000)
+# ])
+
+first = ModelDriver.spikes(ModelDriver.shift(first, -10), 5, 10 ** 3, 10 ** 1)
 first_analyze = AnalyzeModel(first)
 
 # Второй график
+# Гармоника
 second = ModelDriver.trend([
     GarmonikModel(10, 3, 0, 1000, 1, 1 / 1000)
 ])
 
+# Тренд
+# second = ModelDriver.trend([
+#     ExponentialModel(0.01, 3, 0, 1000, 1000)
+# ])
+random = ModelDriver.trend([
+    RandomModel(0, 10, 0, 1000, 100)
+])
+second = ModelDriver.add(random, second)
+second = ModelDriver.spikes(ModelDriver.shift(second, 50), 4, 10 ** 3, 10 ** 1)
 second_analyze = AnalyzeModel(second)
 
 # Третий график
 third = ModelDriver.trend([
-    LinearModel(1, 0, 0, 1000)
+    LinearModel(-1, 0, 0, 1000)
 ])
-
+third = ModelDriver.add(random, third)
+third = ModelDriver.spikes(ModelDriver.shift(third, 10), 3, 10 ** 3, 10 ** 1)
 third_analyze = AnalyzeModel(third)
 
 # Четвертый график
