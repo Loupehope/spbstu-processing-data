@@ -1,6 +1,8 @@
 import random
 import time
-
+import numpy as np
+from Models.RandomModel import *
+from Analyze.AnalyzeModel import *
 
 class ModelDriver:
 
@@ -43,6 +45,12 @@ class ModelDriver:
         return [x_array, y_array]
 
     @staticmethod
+    def anti_shift(data):
+        c = np.mean(data[1])
+
+        return ModelDriver.shift(data, -c)
+
+    @staticmethod
     def spikes(data, count, anchor, shift):
         spike_x = []
         x_array = data[0]
@@ -60,3 +68,113 @@ class ModelDriver:
                 else:
                     y_array[n] = -value
         return [x_array, y_array]
+
+    @staticmethod
+    def anti_spikes(data, min_q, max_q):
+        x_array = data[0]
+        y_array = data[1]
+
+        for i in range(len(y_array)):
+            left_val = 0
+            right_val = 0
+
+            try:
+                left_val = y_array[i - 1]
+            except:
+                left_val = y_array[i + 1]
+
+            try:
+                right_val = y_array[i + 1]
+            except:
+                right_val = y_array[i - 1]
+
+            medium = (right_val + left_val) / 2
+
+            if y_array[i] < min_q or y_array[i] > max_q:
+                y_array[i] = medium
+
+        return [x_array, y_array]
+
+    @staticmethod
+    def anti_trend(data, l=10):
+        x_array = data[0]
+        y_array = data[1]
+        new_y_array = []
+
+        max = len(y_array) - l
+
+        for i in range(max):
+            y_i = 0
+            for j in range(i, i + l):
+                y_i += y_array[j]
+            y_i = y_i / l
+            new_y_array.append(y_i)
+
+        for i in range(l):
+            y_i = 0
+            for j in range(i, i + l):
+                y_i += y_array[len(y_array) - j - 1]
+            y_i = y_i / l
+            new_y_array.append(y_i)
+
+        for i in range(len(y_array)):
+            new_y_array[i] = y_array[i] - new_y_array[i]
+
+        return [x_array, new_y_array]
+
+    @staticmethod
+    def rand_collect():
+        x_array = []
+        y_array = []
+        aver_y_array = []
+        res_x_array = [0]
+        res_y_array = []
+
+        for i in range(1000):
+            x_array.append(i)
+            y_array.append(0)
+
+        for i in range(0, 1000, 10):
+            for j in range(i, i + 10):
+                new_values = RandomModel(-100, 100, 0, 1000, 1).trend()
+                y_array = [x + y for x, y in zip(y_array, new_values[1])]
+
+                if i == 0 and j == 0:
+                    analize = AnalyzeModel([x_array, y_array])
+                    res_y_array.append(1)
+                    print("Ст. отклонение " + str(i) + ": " + str(round(analize.fstd, 3)))
+
+            for k in range(len(y_array)):
+                aver_y_array.append(y_array[k] / (i + 10))
+
+            analize = AnalyzeModel([x_array, aver_y_array])
+            res_y_array.append(analize.fstd / res_y_array[0])
+            res_x_array.append(i + 10)
+            print("Ст. отклонение " + str(i + 10) + ": " + str(round(analize.fstd, 3)))
+            aver_y_array = []
+
+        return [res_x_array[1:], res_y_array[1:]]
+
+    @staticmethod
+    def trend_collect(data):
+        x_array = data[0]
+        y_array = []
+        aver_y_array = []
+        res_y_array = []
+
+        for i in range(1000):
+            y_array.append(0)
+
+        for i in range(0, 10000, 10):
+            for j in range(i, i + 10):
+                new_values = RandomModel(-100, 100, 0, 1000, 1).trend()
+                temp_y_array = [x + y for x, y in zip(data[1], new_values[1])]
+                y_array = [x + y for x, y in zip(y_array, temp_y_array)]
+
+            for k in range(len(y_array)):
+                aver_y_array.append(y_array[k] / (i + 10))
+
+            res_y_array = aver_y_array.copy()
+            aver_y_array = []
+
+        return [x_array, res_y_array]

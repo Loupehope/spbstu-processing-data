@@ -18,12 +18,20 @@ class AnalyzeModel:
         self.fexc = self.exc()
         self.fexc_coef = self.exc_coef()
         self.stationarity = self.calc_stationarity(stationarity_m)
+        self.fmin_quantile = self.min_quantile()
+        self.fmax_quantile = self.max_quantile()
 
     def min(self):
         return np.min(self.data_y)
 
     def max(self):
         return np.max(self.data_y)
+
+    def min_quantile(self):
+        return np.quantile(self.data_y, 0.025)
+
+    def max_quantile(self):
+        return np.quantile(self.data_y, 0.975)
 
     # Мат. ожидание
     def mean(self):
