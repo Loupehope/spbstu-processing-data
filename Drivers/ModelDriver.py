@@ -134,7 +134,7 @@ class ModelDriver:
             x_array.append(i)
             y_array.append(0)
 
-        for i in range(0, 1000, 10):
+        for i in range(0, 10000, 10):
             for j in range(i, i + 10):
                 new_values = RandomModel(-100, 100, 0, 1000, 1).trend()
                 y_array = [x + y for x, y in zip(y_array, new_values[1])]
@@ -148,7 +148,7 @@ class ModelDriver:
                 aver_y_array.append(y_array[k] / (i + 10))
 
             analize = AnalyzeModel([x_array, aver_y_array])
-            res_y_array.append(analize.fstd / res_y_array[0])
+            res_y_array.append(res_y_array[0] / analize.fstd)
             res_x_array.append(i + 10)
             print("Ст. отклонение " + str(i + 10) + ": " + str(round(analize.fstd, 3)))
             aver_y_array = []
