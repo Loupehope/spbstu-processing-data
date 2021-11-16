@@ -40,3 +40,13 @@ class AmpF:
             y_results.append(math.sqrt(re ** 2 + im ** 2))
 
         return [x_results[half + 1:], y_results[half + 1:]]
+
+    @staticmethod
+    def get_garmoniks_from(data, min):
+        counter = 0
+        for i in range(len(data[0])):
+            if data[1][i] >= min:
+                print("Гармоника " + str(counter) + "\n   Амплитуда: " + str(round(data[1][i] * 2)) + "\n   Частота: " +
+                      str(round(data[0][i])))
+                counter += 1
+

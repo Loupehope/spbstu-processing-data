@@ -156,18 +156,18 @@ class ModelDriver:
         return [res_x_array[1:], res_y_array[1:]]
 
     @staticmethod
-    def trend_collect(data):
+    def trend_collect(data, a, b, dt):
         x_array = data[0]
         y_array = []
         aver_y_array = []
         res_y_array = []
 
-        for i in range(1000):
+        for i in range(len(data[0])):
             y_array.append(0)
 
         for i in range(0, 10000, 10):
             for j in range(i, i + 10):
-                new_values = RandomModel(-100, 100, 0, 1000, 1).trend()
+                new_values = RandomModel(-a, b, 0, len(data[0]), dt).trend()
                 temp_y_array = [x + y for x, y in zip(data[1], new_values[1])]
                 y_array = [x + y for x, y in zip(y_array, temp_y_array)]
 

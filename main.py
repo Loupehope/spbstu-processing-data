@@ -12,6 +12,7 @@ from Analyze.AnalyzeModel import *
 from Analyze.MutualModel import *
 
 # Drivers
+from Drivers.ReadDriver import *
 from Drivers.DisplayDriver import *
 from Drivers.ModelDriver import *
 from Drivers.SpecInfoDisplayDriver import *
@@ -77,74 +78,33 @@ first = MultyGarmonikModel.trend([
         GarmonikModel(15, 45, 0, 300, 1, 1 / 100).trend(0, 0)
     ])
 
-# Гармоника
-# first2 = ModelDriver.trend([
-#     GarmonikModel(10, 3, 0, 1000, 1, 1 / 1000)
-# ])
-
-# Тренд
-# first = ModelDriver.trend([
-#     LinearModel(2, 3, 0, 500),
-#     ExponentialModel(0.01, 2, 500, 1000, 100)
-# ])
-# first = ModelDriver.shift(first, 10)
-# first = ModelDriver.spikes(first, 5, 10 ** 0, 10 ** 1)
-# first = MutualModel(first1, first2).mutual_corr_array()
-first_analyze = AnalyzeModel(first)
+# Читаем
+#
+#
+#
+# first = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
 
 # Второй график
-# Гармоника
 # second = ModelDriver.trend([
-#     GarmonikModel(10, 3, 0, 1000, 1, 1 / 1000)
+#     LinearModel(0, 0, 0, 1000)
 # ])
-
-# Тренд
-# second = ModelDriver.trend([
-#     ExponentialModel(0.01, 3, 0, 1000, 1000)
-# ])
-second = ModelDriver.trend([
-    GarmonikModel(10, 3, 0, 300, 1, 1 / 100)
-])
-random_num = RandomModel(-1, 1, 0, 1000, 100).trend()
-# second = [first[0].copy(), first[1].copy()]
-# second = ModelDriver.add(second, random_num)
-# second = ModelDriver.add(random, second)
-# second = ModelDriver.spikes(ModelDriver.shift(second, 50), 4, 10 ** 3, 10 ** 1)
-# second = [first[0].copy(), first[1].copy()]
-# second = ModelDriver.anti_spikes(second)
-second_analyze = AnalyzeModel(second)
+second = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
+#
+# second = ModelDriver.spikes(second, 1, 2, 10**2)
 
 # Третий график
-# third = ModelDriver.trend([
-#     LinearModel(-1, 0, 0, 1000)
-# ])
-# random_num = RandomModel(-1, 1, 0, 1000, 1000).trend()
-# third = ModelDriver.add(random_num, third)
-# third = ModelDriver.spikes(ModelDriver.shift(third, 10), 3, 10 ** 3, 10 ** 1)
-# third_analyze = AnalyzeModel(third)
-
-third = AmpF.calc(first, 1 / 100, 0.91)
-# third = ModelDriver.anti_trend(third, 10)
-# third_analyze = AnalyzeModel(third)
+third = AmpF.calc(first, 0.002, 1)
 
 # Четвертый график
-forth = AmpF.calc(second, 1 / 100, 0.8)
-# forth = ModelDriver.trend([
-#     GarmonikModel(1, 3, 0, 1000, 1, 1 / 1000)
-# ])
-# forth_fixed = ModelDriver.rand_collect()
-# forth_fixed = ModelDriver.trend_collect(forth)
-# forth_analyze = AnalyzeModel(forth)
+forth = AmpF.calc(second, 0.002, 1)
+AmpF.get_garmoniks_from(forth, 4)
 
 # Отрисовываем
-display_model.plot("Полигармоника", first)
-display_model.plot("Гармоника", second)
-display_model.plot("Спект полигармоники", third, "Гц", "|Xn|")
-display_model.plot("Спектр гармоники", forth, "Гц", "|Xn|")
+# display_model.plot("Полигармоника", first)
+display_model.plot("Тренд", second)
+# display_model.plot("Спект полигармоники", third, "Гц", "|Xn|")
+display_model.plot("Спектр тренда", forth, "Гц", "|Xn|")
 
 # Запускаем
 display_model.display()
 window.mainloop()
-
-# antiTrend
-# antiRandom
