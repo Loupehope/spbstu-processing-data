@@ -178,3 +178,23 @@ class ModelDriver:
             aver_y_array = []
 
         return [x_array, res_y_array]
+
+    @staticmethod
+    def convolution(main_data, add_data):
+        x_array = []
+        y_array = []
+
+        for i in range(len(main_data[1]) + len(add_data[1])):
+            sum = 0
+
+            for j in range(len(add_data[1])):
+                try:
+                    sum += main_data[1][i - j] * add_data[1][j]
+                except:
+                    sum += 0
+
+            if (len(add_data[1]) / 2) <= i <= (len(main_data[1]) + len(add_data[1]) - len(add_data[1]) / 2):
+                y_array.append(sum)
+                x_array.append(i - len(add_data[1]) / 2)
+
+        return [x_array, y_array]

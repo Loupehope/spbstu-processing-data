@@ -6,6 +6,8 @@ from Models.PrimitiveRandomModel import *
 from Models.GarmonikModel import *
 from Models.MultyGarmonikModel import *
 from Models.AmpF import *
+from Models.Cardio import *
+from Models.Impuls import *
 
 # Analyze
 from Analyze.AnalyzeModel import *
@@ -72,38 +74,45 @@ display_model.fig.canvas.callbacks.connect('button_press_event', on_click)
 
 # Первый график
 # Poly Гармоника
-first = MultyGarmonikModel.trend([
-        GarmonikModel(10, 3, 0, 300, 1, 1 / 100).trend(0, 0),
-        GarmonikModel(100, 37, 0, 300, 1, 1 / 100).trend(0, 0),
-        GarmonikModel(15, 45, 0, 300, 1, 1 / 100).trend(0, 0)
-    ])
+# first = MultyGarmonikModel.trend([
+#         GarmonikModel(10, 3, 0, 300, 1, 1 / 100).trend(0, 0),
+#         GarmonikModel(100, 37, 0, 300, 1, 1 / 100).trend(0, 0),
+#         GarmonikModel(15, 45, 0, 300, 1, 1 / 100).trend(0, 0)
+#     ])
 
 # Читаем
 #
 #
 #
-# first = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
+main_data = ModelDriver().trend([
+    Impuls({200: 120, 400: 130, 600: 110}, 0, 1000, 1, 0.005)
+])
+add_data = ModelDriver().trend([
+    Cardio(15, 4, 0, 200, 1, 0.005)
+])
+
+first = ModelDriver.convolution(main_data, add_data)
 
 # Второй график
-# second = ModelDriver.trend([
-#     LinearModel(0, 0, 0, 1000)
-# ])
-second = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
+second = ModelDriver.trend([
+    Impuls({200: 120, 400: 130, 600: 110}, 0, 1000)
+])
+# second = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
 #
 # second = ModelDriver.spikes(second, 1, 2, 10**2)
 
 # Третий график
-third = AmpF.calc(first, 0.002, 1)
+third = AmpF.calc(first, 0.0005, 1)
 
 # Четвертый график
 forth = AmpF.calc(second, 0.002, 1)
-AmpF.get_garmoniks_from(forth, 4)
+# AmpF.get_garmoniks_from(forth, 4)
 
 # Отрисовываем
-# display_model.plot("Полигармоника", first)
-display_model.plot("Тренд", second)
-# display_model.plot("Спект полигармоники", third, "Гц", "|Xn|")
-display_model.plot("Спектр тренда", forth, "Гц", "|Xn|")
+display_model.plot("Полигармоника", first)
+display_model.plot("График", second)
+display_model.plot("Спект полигармоники", third, "Гц", "|Xn|")
+display_model.plot("Спектр", forth, "Гц", "|Xn|")
 
 # Запускаем
 display_model.display()
