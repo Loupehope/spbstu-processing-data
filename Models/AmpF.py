@@ -46,7 +46,7 @@ class AmpF:
         counter = 0
         for i in range(len(data[0])):
             if data[1][i] >= min:
-                print("Гармоника " + str(counter) + "\n   Амплитуда: " + str(round(data[1][i] * 2)) + "\n   Частота: " +
-                      str(round(data[0][i])))
+                print("Гармоника " + str(counter) + "\n   Амплитуда: " + str(round(data[1][i] * 2, 3)) + "\n   Частота: " +
+                      str(round(data[0][i], 3)))
                 counter += 1
 
