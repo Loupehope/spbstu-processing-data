@@ -1,5 +1,5 @@
 import math
-
+import numpy as np
 
 class Cardio:
 
@@ -29,6 +29,9 @@ class Cardio:
             y_array.append(y - dy)
             x += self.dt
 
+        max = np.max(y_array)
 
+        for i in range(self.n_from, self.n_to):
+            y_array[i] = y_array[i] / max
 
         return [x_array, y_array]

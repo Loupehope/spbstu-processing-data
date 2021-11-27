@@ -84,35 +84,31 @@ display_model.fig.canvas.callbacks.connect('button_press_event', on_click)
 #
 #
 #
-main_data = ModelDriver().trend([
+first = ModelDriver().trend([
     Impuls({200: 120, 400: 130, 600: 110}, 0, 1000, 1, 0.005)
 ])
-add_data = ModelDriver().trend([
-    Cardio(15, 4, 0, 200, 1, 0.005)
-])
-
-first = ModelDriver.convolution(main_data, add_data)
 
 # Второй график
 second = ModelDriver.trend([
-    Impuls({200: 120, 400: 130, 600: 110}, 0, 1000)
+    Cardio(10, 4, 0, 200, 1, 0.005)
 ])
+
 # second = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
 #
 # second = ModelDriver.spikes(second, 1, 2, 10**2)
 
 # Третий график
-third = AmpF.calc(first, 0.0005, 1)
+third = ModelDriver.convolution(first, second)
 
 # Четвертый график
-forth = AmpF.calc(second, 0.002, 1)
+forth = AmpF.calc(second, 0.005, 1)
 # AmpF.get_garmoniks_from(forth, 4)
 
 # Отрисовываем
-display_model.plot("Полигармоника", first)
-display_model.plot("График", second)
-display_model.plot("Спект полигармоники", third, "Гц", "|Xn|")
-display_model.plot("Спектр", forth, "Гц", "|Xn|")
+display_model.plot("x", first, "t", "x(t)")
+display_model.plot("h", second, "t", "h(t)")
+display_model.plot("Кардиоограмма", third, "t", "y(t)")
+display_model.plot("Спектр h", forth, "Гц", "|Xn|")
 
 # Запускаем
 display_model.display()
