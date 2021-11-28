@@ -10,7 +10,7 @@ class Filters:
     # dt - шаг
     # m - длиннее - более крутой склон, короче - более пологий склон
     @staticmethod
-    def low_filter(f, dt, m, return_with_minus=False):
+    def lpw_filter(f, dt, m, return_with_minus=True):
         window = [0.35577019, 0.2436983, 0.07211497, 0.00630165]
 
         factor = 2 * f * dt
@@ -52,4 +52,51 @@ class Filters:
 
         return [left_x_results[:len(right_y_results) - 1] + right_x_results,
                 left_y_results[:len(right_y_results) - 1] + right_y_results]
+
+    # фильтр высоких частот
+    # f - частота
+    # dt - шаг
+    # m - длиннее - более крутой склон, короче - более пологий склон
+    @staticmethod
+    def hpw_filter(f, dt, m):
+        values = Filters.low_filter(f, dt, m, True)
+
+        for k in range(len(values[0])):
+            if k == m:
+                values[1][k] = 1.0 - values[1][k]
+            else:
+                values[1][k] = -values[1][k]
+
+        return values
+
+    # полосовой фильтр
+    # f1, f2 - частоты
+    # dt - шаг
+    # m - длиннее - более крутой склон, короче - более пологий склон
+    @staticmethod
+    def bpw_filter(f1, f2, dt, m):
+        values1 = Filters.lpw_filter(f1, dt, m, True)
+        values2 = Filters.lpw_filter(f2, dt, m, True)
+
+        for k in range(len(values1[0])):
+            values1[1][k] = values2[1][k] - values1[1][k]
+
+        return values1
+
+    # режекторный фильтр
+    # f1, f2 - частоты
+    # dt - шаг
+    # m - длиннее - более крутой склон, короче - более пологий склон
+    @staticmethod
+    def bsw_filter(f1, f2, dt, m):
+        values1 = Filters.lpw_filter(f1, dt, m, True)
+        values2 = Filters.lpw_filter(f2, dt, m, True)
+
+        for k in range(len(values1[0])):
+            if k == m:
+                values1[1][k] = 1.0 + values1[1][k] - values2[1][k]
+            else:
+                values1[1][k] = values1[1][k] - values2[1][k]
+
+        return values1
 

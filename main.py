@@ -9,7 +9,6 @@ from Models.AmpF import *
 from Models.Cardio import *
 from Models.Impuls import *
 from Models.Filters import *
-from Models.Windows import *
 
 # Analyze
 from Analyze.AnalyzeModel import *
@@ -96,7 +95,7 @@ first = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
 #     Cardio(10, 4, 0, 200, 1, 0.005)
 # ])
 # ФНЧ
-second = Filters.low_filter(100, 0.002, 64, True)
+second = Filters.bsw_filter(50, 200, 0.002, 32)
 #
 # second = ModelDriver.spikes(second, 1, 2, 10**2)
 
