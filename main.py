@@ -88,32 +88,34 @@ display_model.fig.canvas.callbacks.connect('button_press_event', on_click)
 # first = ModelDriver().trend([
 #     Impuls({200: 120, 400: 130, 600: 110}, 0, 1000, 1, 0.005)
 # ])
-# first = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
-first = Filters.lpw_filter(100, 0.002, 32)
+readed = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
+filter = Filters.lpw_filter(15, 0.002, 64)
+filtered = ModelDriver.convolution(readed, filter)
+first = filtered
 
 # Второй график
 # second = ModelDriver.trend([
 #     Cardio(10, 4, 0, 200, 1, 0.005)
 # ])
 # ФНЧ
-nomalized = Filters.normalized([first[0].copy(), first[1].copy()], 32)
-second = AmpF.calc(nomalized, 0.002, 1)
+second = AmpF.calc([first[0].copy(), first[1].copy()], 0.002, 1)
 #
 # second = ModelDriver.spikes(second, 1, 2, 10**2)
 
 # Третий график
-third = AmpF.calc(first, 0.002, 1)
+nomalized = Filters.normalized([filter[0].copy(), filter[1].copy()], 64)
+third = AmpF.calc(nomalized, 0.002, 1)
 
 
 # Четвертый график
-forth = AmpF.calc(second, 0.002, 1)
+# forth = AmpF.calc(second, 0.002, 1)
 # AmpF.get_garmoniks_from(third, 4)
 
 # Отрисовываем
-display_model.plot("Potter LPF weights", first, "[index]", "")
-display_model.plot("Potter LPF TF", second, "Гц", "")
-display_model.plot("Кардиоограмма", third, "t", "y(t)")
-display_model.plot("Спектр h", forth, "Гц", "|Xn|")
+display_model.plot("Отфильтрованные данные", first, "t", "x(t)")
+display_model.plot("Спектр офильтрованных данных", second, "Гц", "")
+display_model.plot("АЧХ Фильтра", third, "Гц", "")
+# display_model.plot("Спектр h", forth, "Гц", "|Xn|")
 
 # Запускаем
 display_model.display()
