@@ -8,6 +8,8 @@ from Models.MultyGarmonikModel import *
 from Models.AmpF import *
 from Models.Cardio import *
 from Models.Impuls import *
+from Models.Filters import *
+from Models.Windows import *
 
 # Analyze
 from Analyze.AnalyzeModel import *
@@ -88,28 +90,29 @@ display_model.fig.canvas.callbacks.connect('button_press_event', on_click)
 #     Impuls({200: 120, 400: 130, 600: 110}, 0, 1000, 1, 0.005)
 # ])
 first = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
+
 # Второй график
 # second = ModelDriver.trend([
 #     Cardio(10, 4, 0, 200, 1, 0.005)
 # ])
-
-second = AmpF.calc(first, 0.002, 1)
-AmpF.get_garmoniks_from(second, 4)
+# ФНЧ
+second = Filters.low_filter(100, 0.002, 64, True)
 #
 # second = ModelDriver.spikes(second, 1, 2, 10**2)
 
 # Третий график
-# third = ModelDriver.convolution(first, second)
+third = AmpF.calc(first, 0.002, 1)
+
 
 # Четвертый график
-# forth = AmpF.calc(second, 0.005, 1)
-# AmpF.get_garmoniks_from(forth, 4)
+forth = AmpF.calc(second, 0.002, 1)
+# AmpF.get_garmoniks_from(third, 4)
 
 # Отрисовываем
 display_model.plot("Данные из файла", first, "t", "x(t)")
 display_model.plot("Спектр", second, "Гц", "|Xn|")
-# display_model.plot("Кардиоограмма", third, "t", "y(t)")
-# display_model.plot("Спектр h", forth, "Гц", "|Xn|")
+display_model.plot("Кардиоограмма", third, "t", "y(t)")
+display_model.plot("Спектр h", forth, "Гц", "|Xn|")
 
 # Запускаем
 display_model.display()
