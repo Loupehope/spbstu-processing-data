@@ -88,14 +88,16 @@ display_model.fig.canvas.callbacks.connect('button_press_event', on_click)
 # first = ModelDriver().trend([
 #     Impuls({200: 120, 400: 130, 600: 110}, 0, 1000, 1, 0.005)
 # ])
-first = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
+# first = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
+first = Filters.lpw_filter(100, 0.002, 32)
 
 # Второй график
 # second = ModelDriver.trend([
 #     Cardio(10, 4, 0, 200, 1, 0.005)
 # ])
 # ФНЧ
-second = Filters.bsw_filter(50, 200, 0.002, 32)
+nomalized = Filters.normalized([first[0].copy(), first[1].copy()], 32)
+second = AmpF.calc(nomalized, 0.002, 1)
 #
 # second = ModelDriver.spikes(second, 1, 2, 10**2)
 
@@ -108,8 +110,8 @@ forth = AmpF.calc(second, 0.002, 1)
 # AmpF.get_garmoniks_from(third, 4)
 
 # Отрисовываем
-display_model.plot("Данные из файла", first, "t", "x(t)")
-display_model.plot("Спектр", second, "Гц", "|Xn|")
+display_model.plot("Potter LPF weights", first, "[index]", "")
+display_model.plot("Potter LPF TF", second, "Гц", "")
 display_model.plot("Кардиоограмма", third, "t", "y(t)")
 display_model.plot("Спектр h", forth, "Гц", "|Xn|")
 

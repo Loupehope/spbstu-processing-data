@@ -59,7 +59,7 @@ class Filters:
     # m - длиннее - более крутой склон, короче - более пологий склон
     @staticmethod
     def hpw_filter(f, dt, m):
-        values = Filters.low_filter(f, dt, m, True)
+        values = Filters.lpw_filter(f, dt, m, True)
 
         for k in range(len(values[0])):
             if k == m:
@@ -100,3 +100,8 @@ class Filters:
 
         return values1
 
+    @staticmethod
+    def normalized(values, m):
+        for k in range(len(values[0])):
+            values[1][k] *= 2 * m + 1
+        return values
