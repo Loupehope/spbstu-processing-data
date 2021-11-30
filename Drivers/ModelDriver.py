@@ -180,7 +180,7 @@ class ModelDriver:
         return [x_array, res_y_array]
 
     @staticmethod
-    def convolution(main_data, add_data):
+    def convolution(main_data, add_data, dt):
         x_array = []
         y_array = []
 
@@ -188,13 +188,13 @@ class ModelDriver:
             sum = 0
 
             for j in range(len(add_data[1])):
-                try:
+                if range(len(main_data[1])).__contains__(i - j):
                     sum += main_data[1][i - j] * add_data[1][j]
-                except:
+                else:
                     sum += 0
 
-            if (len(add_data[1]) / 2) <= i <= (len(main_data[1]) + len(add_data[1]) - len(add_data[1]) / 2):
+            if (len(add_data[1]) / 2) <= i <= (len(main_data[1]) + len(add_data[1]) / 2):
                 y_array.append(sum)
-                x_array.append(i - len(add_data[1]) / 2)
+                x_array.append((i - len(add_data[1]) / 2) * dt)
 
         return [x_array, y_array]

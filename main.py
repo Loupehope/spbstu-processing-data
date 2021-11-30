@@ -90,7 +90,9 @@ display_model.fig.canvas.callbacks.connect('button_press_event', on_click)
 # ])
 readed = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
 filter = Filters.lpw_filter(15, 0.002, 64)
-filtered = ModelDriver.convolution(readed, filter)
+filtered = ModelDriver.convolution(readed, filter, 0.002)
+
+
 first = filtered
 
 # Второй график
