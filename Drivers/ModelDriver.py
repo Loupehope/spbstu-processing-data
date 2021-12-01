@@ -193,7 +193,7 @@ class ModelDriver:
                 else:
                     sum += 0
 
-            if (len(add_data[1]) / 2) <= i <= (len(main_data[1]) + len(add_data[1]) / 2):
+            if (len(add_data[1]) / 2) <= i < (len(main_data[1]) + len(add_data[1]) / 2):
                 y_array.append(sum)
                 x_array.append((i - len(add_data[1]) / 2) * dt)
 

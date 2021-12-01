@@ -89,12 +89,15 @@ display_model.fig.canvas.callbacks.connect('button_press_event', on_click)
 #     Impuls({200: 120, 400: 130, 600: 110}, 0, 1000, 1, 0.005)
 # ])
 readed = ReadDriver.read("pgp_float4_1000_2ms.dat", "float32")
-filter = Filters.lpw_filter(15, 0.002, 64)
+filter = Filters.bsw_filter(15, 100, 0.002, 64)
 filtered = ModelDriver.convolution(readed, filter, 0.002)
-
-
+#
+# import scipy
+# from scipy import signal
+#
+# result = scipy.signal.convolve(readed[1], filter[1], 'same')
+# first = [filtered[0], result]
 first = filtered
-
 # Второй график
 # second = ModelDriver.trend([
 #     Cardio(10, 4, 0, 200, 1, 0.005)
@@ -110,14 +113,14 @@ third = AmpF.calc(nomalized, 0.002, 1)
 
 
 # Четвертый график
-# forth = AmpF.calc(second, 0.002, 1)
+forth = filter
 # AmpF.get_garmoniks_from(third, 4)
 
 # Отрисовываем
 display_model.plot("Отфильтрованные данные", first, "t", "x(t)")
 display_model.plot("Спектр офильтрованных данных", second, "Гц", "")
 display_model.plot("АЧХ Фильтра", third, "Гц", "")
-# display_model.plot("Спектр h", forth, "Гц", "|Xn|")
+display_model.plot("Веса фильтра", forth, "[index]", "")
 
 # Запускаем
 display_model.display()
