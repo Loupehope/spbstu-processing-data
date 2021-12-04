@@ -9,22 +9,25 @@ class AmpF:
         y_results = []
 
         f_d = (1 / (2 * dt)) / (len(data[1]) / 2)
-        f = -(1 / (2 * dt))
+        # f = -(1 / (2 * dt))
+
+        f = 0
 
         half = int(len(data[1]) / 2)
         zeros_count = half * (1 - window)
 
         y_arr = data[1].copy()
 
-        for i in range(half):
-            if zeros_count > 0:
-                y_arr[i] = 0
-                y_arr[len(data[1]) - i - 1] = 0
-                zeros_count -= 1
-            else:
-                break
+        if window < 1:
+            for i in range(half):
+                if zeros_count > 0:
+                    y_arr[i] = 0
+                    y_arr[len(data[1]) - i - 1] = 0
+                    zeros_count -= 1
+                else:
+                    break
 
-        for j in range(-half, half):
+        for j in range(0, half):
             re = 0
             im = 0
 
@@ -39,7 +42,9 @@ class AmpF:
             f += f_d
             y_results.append(math.sqrt(re ** 2 + im ** 2))
 
-        return [x_results[half + 1:], y_results[half + 1:]]
+            # print("Осталось: " + str(round(float(j) / float(half), 3) * 100) + "%")
+
+        return [x_results, y_results]
 
     @staticmethod
     def get_garmoniks_from(data, min):
