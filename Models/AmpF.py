@@ -9,8 +9,6 @@ class AmpF:
         y_results = []
 
         f_d = (1 / (2 * dt)) / (len(data[1]) / 2)
-        # f = -(1 / (2 * dt))
-
         f = 0
 
         half = int(len(data[1]) / 2)
@@ -42,7 +40,7 @@ class AmpF:
             f += f_d
             y_results.append(math.sqrt(re ** 2 + im ** 2))
 
-            # print("Осталось: " + str(round(float(j) / float(half), 3) * 100) + "%")
+            print(str(j) + ' ' + str(half))
 
         return [x_results, y_results]
 

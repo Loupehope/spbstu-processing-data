@@ -14,12 +14,12 @@ class WAV:
     @staticmethod
     def format(rate, data):
         x_array = []
-        dt = 1 / rate
+        dt = 1 # / rate
         x = 0
         for i in range(len(data)):
             x_array.append(x)
             x += dt
-        return  [x_array, data]
+        return [x_array, data]
 
     @staticmethod
     def volume(amp, data):
