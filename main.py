@@ -1,5 +1,6 @@
 # Models
 from Models.AmpF import *
+from Models.Filters import *
 
 # Audio
 from Audio.WAV import *
@@ -41,18 +42,20 @@ data_o = [data[0][14000:17000].copy(), data[1][14000:17000].copy()]
 first = data_o
 
 # Второй график
-second = AmpF.calc(first, 1 / rate, 1)
+second = ModelDriver.convolution(first, Filters.bpw_filter(3200, 3600, 1 / rate, 64), 1)
 
 # Третий график
-# third = WAV.volume(0.1, data)
+third = AmpF.calc(first, 1 / rate, 1)
 # WAV.write("audio_mod.wav", rate, third)
 # Четвертый график
+forth = AmpF.calc(second, 1 / rate, 1)
 
 # Отрисовываем
-display_model.plot("Фонема ""О""", first, "t [ms]", "x(t)")
-display_model.plot("Спектр", second, "Гц", "")
-display_model.plot("Спектр до 5000 Гц", [second[0][:600], second[1][:600]], "Гц", "")
-display_model.plot("Спектр до 3000 Гц", [second[0][:400], second[1][:400]], "Гц", "")
+display_model.plot("Исходная фонема ""О""", first, "t [ms]", "x(t)")
+display_model.plot("Фонема ""О"" только с 4-й формантой", second, "t [ms]", "x(t)")
+display_model.plot("Исходный спектр до 5000 Гц", [third[0][:600], third[1][:600]], "Гц", "")
+display_model.plot("Новый спектр до 5000 Гц", [forth[0][:600], forth[1][:600]], "Гц", "")
+# display_model.plot("Спектр до 3000 Гц", [second[0][:400], second[1][:400]], "Гц", "")
 
 # Запускаем
 display_model.display()
