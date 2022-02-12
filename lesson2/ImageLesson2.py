@@ -1,0 +1,26 @@
+from Drivers.ImageModelDriver import *
+from Drivers.ImageDisplayDriver import *
+from Models.SPDImage import *
+from Drivers.ReadDriver import *
+
+class ImageLesson2:
+
+    @staticmethod
+    def run():
+        # Загружаем фото c12-85v.xcr
+        loaded_image_c12_85v = ReadDriver.image_binary_read(
+            'lesson2/', 'c12-85v', '.png', np.uint16, 1024, 1024, 5120
+        )
+
+        # Обрабатываем
+        ImageModelDriver.rotate90(loaded_image_c12_85v)
+        ImageDisplayDriver.save(loaded_image_c12_85v)
+
+        # Загружаем фото u0.xcr
+        loaded_image_u0 = ReadDriver.image_binary_read(
+            'lesson2/', 'u0', '.png', np.uint16, 2048, 2500, 5120
+        )
+
+        # Обрабатываем
+        ImageModelDriver.rotate90(loaded_image_u0)
+        ImageDisplayDriver.save(loaded_image_u0)

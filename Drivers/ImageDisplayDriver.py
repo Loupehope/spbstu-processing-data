@@ -6,4 +6,4 @@ class ImageDisplayDriver:
 
     @staticmethod
     def save(data: SPDImage):
-        Image.fromarray(data.modified_image.astype(np.uint8)).save(data.folder + data.modified_name + data.extension)
+        Image.fromarray(data.modified_image.astype(data.dtype)).save(data.folder + data.modified_name + data.extension)

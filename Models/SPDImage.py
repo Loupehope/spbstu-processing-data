@@ -4,11 +4,16 @@ from PIL import Image
 
 class SPDImage:
 
-    def __init__(self, folder, name, extension):
+    def __init__(self, folder, name, extension, data, dtype):
         self.folder = folder
         self.name = name
         self.extension = extension
         self.modified_name = name
         self.counter = 0
-        self.original_image = np.array(Image.open(folder + name + extension).convert('L'))
-        self.modified_image = np.array(Image.open(folder + name + extension).convert('L'))
+        self.dtype = dtype
+        self.original_image = np.array(data, copy=True)
+        self.modified_image = np.array(data, copy=True)
+
+    @classmethod
+    def fromFile(cls, folder, name, extension, dtype):
+        return cls(folder, name, extension, np.array(Image.open(folder + name + extension).convert('L')), dtype)

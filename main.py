@@ -1,17 +1,5 @@
-from Drivers.ImageModelDriver import *
-from Drivers.ImageDisplayDriver import *
-from Models.SPDImage import *
+from lesson1.ImageLesson1 import *
+from lesson2.ImageLesson2 import *
 
-# Загружаем фото
-loaded_image = SPDImage('photo/', 'photo', '.jpg')
-
-# Обрабатываем
-ImageModelDriver.add_shift(loaded_image, 30)
-ImageDisplayDriver.save(loaded_image)
-
-ImageModelDriver.multi_shift(loaded_image, 1.3)
-ImageDisplayDriver.save(loaded_image)
-
-# Вывод результата
-ImageModelDriver.anti_shift(loaded_image)
-ImageDisplayDriver.save(loaded_image)
+ImageLesson1.run()
+ImageLesson2.run()

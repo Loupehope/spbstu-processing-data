@@ -28,8 +28,6 @@ class ImageModelDriver:
         data.counter += 1
         data.modified_name = data.name + '_' + str(data.counter) + '_add_shift'
 
-        return np.array(result_array).astype(np.uint8)
-
     @staticmethod
     def anti_shift(data: SPDImage):
         max_a = np.max(data.modified_image)
@@ -38,11 +36,15 @@ class ImageModelDriver:
         result_array = []
 
         for row in data.modified_image:
-            y_array = [(y - min_a) * 255 / diff_a for y in row]
+            y_array = [(y - min_a) * np.iinfo(data.dtype).max / diff_a for y in row]
             result_array.append(y_array)
 
         data.modified_image = np.array(result_array)
         data.counter += 1
         data.modified_name = data.name + '_' + str(data.counter) + '_anti_shift'
 
-        return np.array(result_array).astype(np.uint8)
+    @staticmethod
+    def rotate90(data: SPDImage):
+        data.modified_image = np.rot90(data.modified_image)
+        data.counter += 1
+        data.modified_name = data.name + '_' + str(data.counter) + '_rotated'
