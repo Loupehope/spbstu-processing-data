@@ -9,7 +9,7 @@ class ImageLesson2:
     def run():
         # Загружаем фото c12-85v.xcr
         loaded_image_c12_85v = ReadDriver.image_binary_read(
-            'lesson2/', 'c12-85v', '.jpg', '>h', 1024, 1024, 5120
+            'lesson2/', 'c12-85v', '.jpg', '>H', 1024, 1024, 5120
         )
 
         # Обрабатываем
@@ -19,7 +19,7 @@ class ImageLesson2:
 
         # Загружаем фото u0.xcr
         loaded_image_u0 = ReadDriver.image_binary_read(
-            'lesson2/', 'u0', '.jpg', '>h', 2048, 2500, 5120
+            'lesson2/', 'u0', '.jpg', '>H', 2048, 2500, 5120
         )
 
         # Обрабатываем
