@@ -18,5 +18,5 @@ class ImageLesson1:
         ImageDisplayDriver.save(loaded_image)
 
         # Вывод результата
-        ImageModelDriver.anti_shift(loaded_image)
+        ImageModelDriver.grayscale(loaded_image)
         ImageDisplayDriver.save(loaded_image)
