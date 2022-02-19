@@ -1,6 +1,7 @@
 from Drivers.ImageModelDriver import *
 from Drivers.ImageDisplayDriver import *
 from Models.SPDImage import *
+from PIL import Image
 
 
 class ImageLesson1:
@@ -17,6 +18,8 @@ class ImageLesson1:
         ImageModelDriver.multi_shift(loaded_image, 1.3)
         ImageDisplayDriver.save(loaded_image)
 
-        # Вывод результата
         ImageModelDriver.grayscale(loaded_image)
+        ImageDisplayDriver.save(loaded_image)
+
+        ImageModelDriver.resize(loaded_image, Image.NEAREST, 1.3)
         ImageDisplayDriver.save(loaded_image)
