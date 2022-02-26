@@ -17,3 +17,8 @@ class SPDImage:
     @classmethod
     def fromFile(cls, folder, name, extension, dtype):
         return cls(folder, name, extension, np.array(Image.open(folder + name + extension).convert('L')), dtype)
+
+    def update(self, new_data, suffix_name):
+        self.modified_image = new_data
+        self.counter += 1
+        self.modified_name = self.name + '_' + str(self.counter) + suffix_name

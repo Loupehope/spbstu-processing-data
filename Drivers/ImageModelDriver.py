@@ -5,6 +5,10 @@ from PIL import Image
 
 class ImageModelDriver:
 
+    # -------------------------------
+    # Лекция 1
+    # -------------------------------
+
     @staticmethod
     def multi_shift(data: SPDImage, c):
         result_array = []
@@ -13,9 +17,7 @@ class ImageModelDriver:
             y_array = [y * c for y in row]
             result_array.append(y_array)
 
-        data.modified_image = np.array(result_array)
-        data.counter += 1
-        data.modified_name = data.name + '_' + str(data.counter) + '_multi_shift'
+        data.update(np.array(result_array), '_multi_shift')
 
     @staticmethod
     def add_shift(data: SPDImage, c):
@@ -25,9 +27,7 @@ class ImageModelDriver:
             y_array = [y + c for y in row]
             result_array.append(y_array)
 
-        data.modified_image = np.array(result_array)
-        data.counter += 1
-        data.modified_name = data.name + '_' + str(data.counter) + '_add_shift'
+        data.update(np.array(result_array), '_add_shift')
 
     @staticmethod
     def grayscale(data: SPDImage, dtype=np.uint8):
@@ -40,15 +40,15 @@ class ImageModelDriver:
             y_array = [(y - min_a) * np.iinfo(dtype).max / diff_a for y in row]
             result_array.append(y_array)
 
-        data.modified_image = np.array(result_array)
-        data.counter += 1
-        data.modified_name = data.name + '_' + str(data.counter) + '_grayscale'
+        data.update(np.array(result_array), '_grayscale')
+
+    # -------------------------------
+    # Лекция 2
+    # -------------------------------
 
     @staticmethod
     def rotate90(data: SPDImage):
-        data.modified_image = np.rot90(data.modified_image)
-        data.counter += 1
-        data.modified_name = data.name + '_' + str(data.counter) + '_rotated'
+        data.update(np.rot90(data.modified_image), '_rotated')
 
     @staticmethod
     def resize(data: SPDImage, resample: int, scale_const: float, dtype=np.uint8):
@@ -67,6 +67,42 @@ class ImageModelDriver:
         else:
             resample_type_text = str(resample)
 
-        data.modified_image = np.array(resized_image, copy=True)
-        data.counter += 1
-        data.modified_name = data.name + '_' + str(data.counter) + '_resized_' + resample_type_text
+        data.update(np.array(resized_image, copy=True), '_resized_' + resample_type_text)
+
+    # -------------------------------
+    # Лекция 3
+    # -------------------------------
+
+    @staticmethod
+    def negative(data: SPDImage):
+        max_a = np.max(data.modified_image)
+        result_array = []
+
+        for row in data.modified_image:
+            y_array = [max_a - 1 - y for y in row]
+            result_array.append(y_array)
+
+        data.update(np.array(result_array), '_negative')
+
+    @staticmethod
+    def gamma_correction(data: SPDImage, const, gamma):
+        result_array = []
+
+        for row in data.modified_image:
+            y_array = [const * (np.power(y, gamma)) for y in row]
+            result_array.append(y_array)
+
+        data.update(np.array(result_array), '_gamma_correction')
+
+    # Делаем изображение более контрастным при увеличении const
+    # Делаем изображение менее констрастным при уменьшении const
+    @staticmethod
+    def log_correction(data: SPDImage, const):
+        result_array = []
+
+        for row in data.modified_image:
+            y_array = [const * (np.log10(y + 1)) for y in row]
+            result_array.append(y_array)
+
+        data.update(np.array(result_array), '_log_correction')
+
