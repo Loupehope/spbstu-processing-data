@@ -106,3 +106,9 @@ class ImageModelDriver:
 
         data.update(np.array(result_array), '_log_correction')
 
+    @staticmethod
+    def histogram(data: SPDImage, dtype=np.uint8):
+        image_from_array = Image.fromarray(data.modified_image.astype(dtype))
+        image_from_array.histogram()
+
+        data.update(np.array(result_array), '_log_correction')
