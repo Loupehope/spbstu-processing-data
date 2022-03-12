@@ -106,9 +106,26 @@ class ImageModelDriver:
 
         data.update(np.array(result_array), '_log_correction')
 
-    @staticmethod
-    def histogram(data: SPDImage, dtype=np.uint8):
-        image_from_array = Image.fromarray(data.modified_image.astype(dtype))
-        image_from_array.histogram()
+    # -------------------------------
+    # Лекция 5
+    # -------------------------------
 
-        data.update(np.array(result_array), '_log_correction')
+    @staticmethod
+    def convolution(main_data, add_data, dt):
+        x_array = []
+        y_array = []
+
+        for i in range(len(main_data) + len(add_data)):
+            sum = 0
+
+            for j in range(len(add_data)):
+                if range(len(main_data)).__contains__(i - j):
+                    sum += main_data[i - j] * add_data[j]
+                else:
+                    sum += 0
+
+            if (len(add_data) / 2) <= i < (len(main_data) + len(add_data) / 2):
+                y_array.append(sum)
+                x_array.append((i - len(add_data) / 2) * dt)
+
+        return [x_array, y_array]
