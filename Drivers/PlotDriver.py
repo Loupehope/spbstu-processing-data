@@ -16,3 +16,13 @@ class PlotDriver:
 
         plt.savefig(folder_path + suffix + spd_image.name + data[1] + '.jpg')
         plt.clf()
+
+    @staticmethod
+    def plot_raw(data, folder: str, name: str):
+        plt.plot(data[0], data[1])
+
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+        plt.savefig(folder + name + '.jpg')
+        plt.clf()
