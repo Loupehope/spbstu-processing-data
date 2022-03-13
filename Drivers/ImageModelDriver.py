@@ -3,6 +3,8 @@ from Models.SPDImage import *
 from Analyze.AnalyzeModel import *
 from PIL import Image
 from Analyze.Filters import *
+import numba
+
 
 class ImageModelDriver:
 
@@ -112,7 +114,8 @@ class ImageModelDriver:
     # -------------------------------
 
     @staticmethod
-    def convolution(main_data, add_data, dt):
+    @numba.jit(nopython=True)
+    def convolution(main_data: np.ndarray, add_data: np.ndarray, dt: float):
         x_array = []
         y_array = []
 
@@ -120,7 +123,7 @@ class ImageModelDriver:
             sum = 0
 
             for j in range(len(add_data)):
-                if range(len(main_data)).__contains__(i - j):
+                if 0 <= (i - j) < len(main_data):
                     sum += main_data[i - j] * add_data[j]
                 else:
                     sum += 0
@@ -186,7 +189,7 @@ class ImageModelDriver:
 
         result = []
         for row in image.modified_image:
-            conv = ImageModelDriver.convolution(row, filter, 1)[1]
+            conv = ImageModelDriver.convolution(np.array(row), np.array(filter), 1)[1]
             result.append(conv)
 
         image.update(result, '_fixed')
