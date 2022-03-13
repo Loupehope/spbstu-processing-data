@@ -7,5 +7,5 @@ from lesson5.ImageLesson5 import *
 # ImageLesson1.run()
 # ImageLesson2.run()
 # ImageLesson3.run()
-ImageLesson4.run()
-# ImageLesson5.run()
+# ImageLesson4.run()
+ImageLesson5.run()
