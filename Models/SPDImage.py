@@ -22,3 +22,6 @@ class SPDImage:
         self.modified_image = np.array(new_data, copy=True)
         self.counter += 1
         self.modified_name = self.name + '_' + str(self.counter) + suffix_name
+
+    def max_type_colors_count(self) -> int:
+        return np.iinfo(self.dtype).max + 1

@@ -18,8 +18,18 @@ class PlotDriver:
         plt.clf()
 
     @staticmethod
+    def plot_bar(data, folder: str, name: str):
+        plt.bar(list(range(0, len(data[0]))), data[0])
+
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+        plt.savefig(folder + name + '.jpg')
+        plt.clf()
+
+    @staticmethod
     def plot_raw(data, folder: str, name: str):
-        plt.plot(data[0], data[1])
+        plt.plot(data[0])
 
         if not os.path.exists(folder):
             os.makedirs(folder)
