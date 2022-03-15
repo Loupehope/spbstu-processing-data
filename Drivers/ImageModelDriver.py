@@ -135,7 +135,7 @@ class ImageModelDriver:
         return [x_array, y_array]
 
     @staticmethod
-    def find_moire_for_image(image: SPDImage, m, quantile=0.6, dt=1):
+    def find_moire_for_image(image: SPDImage, m, quantile=0.7, dt=1):
         diff_im = []
         for row_idx in range(0, len(image.modified_image), m):
             row = image.modified_image[row_idx]

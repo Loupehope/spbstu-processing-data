@@ -1,26 +1,20 @@
 import numpy as np
 import math
-import scipy.fftpack
+import numba
 
 
 class AnalyzeModel:
 
     @staticmethod
-    def var(data):
-        return np.var(data)
-
-    @staticmethod
-    def mean(data):
-        return np.mean(data)
-
-    @staticmethod
+    @numba.jit(nopython=True)
     def diff(data, dx=1):
         return np.diff(data) / dx
 
     @staticmethod
-    def auto_corr_array(data):
-        mean = AnalyzeModel.mean(data)
-        var = AnalyzeModel.var(data)
+    @numba.jit(nopython=True)
+    def auto_corr_array(data: np.ndarray) -> np.ndarray:
+        mean = np.mean(data)
+        var = np.var(data)
         auto_array = []
 
         def auto_corr(shift):
@@ -34,13 +28,14 @@ class AnalyzeModel:
         for i in range(len(data)):
             auto_array.append(auto_corr(i))
 
-        return auto_array
+        return np.array(auto_array)
 
     # Взаимнокорреляционная функция
     @staticmethod
-    def mutual_corr_array(first, second):
-        mean_f = AnalyzeModel.mean(first)
-        mean_s = AnalyzeModel.mean(second)
+    @numba.jit(nopython=True)
+    def mutual_corr_array(first: np.ndarray, second: np.ndarray) -> np.ndarray:
+        mean_f = np.mean(first)
+        mean_s = np.mean(second)
         count = len(first)
         auto_array = []
 
@@ -54,10 +49,11 @@ class AnalyzeModel:
         for i in range(count):
             auto_array.append(auto_corr(i))
 
-        return auto_array
+        return np.array(auto_array)
 
     @staticmethod
-    def fourier(data, dt):
+    @numba.jit(nopython=True)
+    def fourier(data: np.ndarray, dt: int) -> np.ndarray:
         x_results = []
         y_results = []
 
@@ -82,4 +78,4 @@ class AnalyzeModel:
             f += f_d
             y_results.append(math.sqrt(re ** 2 + im ** 2))
 
-        return [x_results, y_results]
+        return np.array([x_results, y_results])
