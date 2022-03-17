@@ -177,7 +177,11 @@ class ImageModelDriver:
         return result_freqs
 
     @staticmethod
-    def fix_moire_for_image(image: SPDImage, result_freqs) -> bool:
+    def fix_moire_for_image(
+            image: SPDImage,
+            result_freqs,
+            apply_vertical_fix
+    ) -> bool:
         if len(result_freqs) == 0:
             print('Не нашлась решетка на изображении!')
             return False
@@ -192,7 +196,15 @@ class ImageModelDriver:
             conv = ImageModelDriver.convolution(np.array(row), np.array(filter), 1)[1]
             result.append(conv)
 
-        image.update(result, '_fixed')
+        if apply_vertical_fix:
+            rotated = np.rot90(result)
+            result = []
+            for row in rotated:
+                conv = ImageModelDriver.convolution(np.array(row), np.array(filter), 1)[1]
+                result.append(conv)
+            image.update(np.rot90(result, k=3), '_fixed')
+        else:
+            image.update(result, '_fixed')
 
         print('Изображение ' + image.name + ' исправлено!\n')
 

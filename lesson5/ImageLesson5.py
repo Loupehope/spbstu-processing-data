@@ -16,7 +16,8 @@ class ImageLesson5:
         # Обрабатываем
         is_fixed = ImageModelDriver.fix_moire_for_image(
             loaded_image_c12_85v,
-            ImageModelDriver.find_moire_for_image(loaded_image_c12_85v, 20)
+            ImageModelDriver.find_moire_for_image(loaded_image_c12_85v, 20),
+            apply_vertical_fix=False
         )
 
         # Сохраняем
@@ -32,7 +33,8 @@ class ImageLesson5:
         # Обрабатываем
         is_fixed = ImageModelDriver.fix_moire_for_image(
             loaded_image_u0,
-            ImageModelDriver.find_moire_for_image(loaded_image_u0, 100)
+            ImageModelDriver.find_moire_for_image(loaded_image_u0, 100),
+            apply_vertical_fix=True
         )
 
         # Сохраняем
