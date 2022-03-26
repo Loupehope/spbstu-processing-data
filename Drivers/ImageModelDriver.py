@@ -1,9 +1,12 @@
-import numpy as np
 from Models.SPDImage import *
 from Analyze.AnalyzeModel import *
 from PIL import Image
 from Analyze.Filters import *
+
+import numpy as np
 import numba
+import random
+import cv2
 
 
 class ImageModelDriver:
@@ -180,14 +183,16 @@ class ImageModelDriver:
     def fix_moire_for_image(
             image: SPDImage,
             result_freqs,
-            apply_vertical_fix
+            apply_vertical_fix,
+            shift,
+            m
     ) -> bool:
         if len(result_freqs) == 0:
             print('Не нашлась решетка на изображении!')
             return False
 
         first_top_freq = result_freqs[0]
-        filter = Filters.bsw_filter(first_top_freq - 0.05, first_top_freq + 0.05, 1, 32)[1]
+        filter = Filters.bsw_filter(first_top_freq - shift, first_top_freq + shift, 1, m)[1]
 
         print('Работаем с частотой: ' + str(first_top_freq))
 
@@ -209,3 +214,92 @@ class ImageModelDriver:
         print('Изображение ' + image.name + ' исправлено!\n')
 
         return True
+
+    # -------------------------------
+    # Лекция 6
+    # -------------------------------
+
+    @staticmethod
+    def salt_pepper(image: SPDImage, dots_count: int):
+        final_image = []
+
+        for row in image.modified_image:
+            result = ImageModelDriver.salt_pepper_per_line(row, dots_count)
+            final_image.append(result)
+
+        image.update(final_image, '_salt_and_pepper')
+
+    @staticmethod
+    @numba.jit(nopython=True)
+    def salt_pepper_per_line(image_data: np.ndarray, dots_count: int) -> np.ndarray:
+        result_row = []
+
+        for item in image_data:
+            possibility = random.randint(0, 1000)
+
+            if possibility < dots_count:
+                result_row.append(0)
+            elif 300 < possibility < (300 + dots_count):
+                result_row.append(255)
+            else:
+                result_row.append(item)
+
+        return np.array(result_row)
+
+    @staticmethod
+    def random_noize(image: SPDImage, intensity: int):
+        final_image = []
+
+        for row in image.modified_image:
+            result = ImageModelDriver.random_noize_per_line(row, intensity)
+            final_image.append(result)
+
+        image.update(final_image, '_random_noize')
+
+    @staticmethod
+    @numba.jit(nopython=True)
+    def random_noize_per_line(image_data: np.ndarray, intensity: int) -> np.ndarray:
+        result_row = []
+
+        for item in image_data:
+            noize = random.randint(0, intensity)
+            sign = random.randint(0, 1000)
+
+            if sign > 500:
+                result_row.append((item + noize) % 255)
+            else:
+                result_row.append((item - noize) % 255)
+        return np.array(result_row)
+
+    @staticmethod
+    def linear_filter(image_sd: SPDImage, kernel: int):
+        image = image_sd.modified_image
+        mask = np.ones([kernel, kernel], dtype=int)
+
+        output = np.zeros_like(image)
+        image_padded = np.zeros((image.shape[0] + kernel - 1, image.shape[1] + kernel - 1))
+        image_padded[1:-1, 1:-1] = image
+
+        for x in range(image.shape[1]):
+            for y in range(image.shape[0]):
+                output[y, x] = np.mean((mask * image_padded[y: y + kernel, x: x + kernel]))
+
+        processed_image = np.array(output)
+
+        image_sd.update(processed_image, '_linear_filter')
+
+    @staticmethod
+    def median_filter(image_sd: SPDImage, kernel: int):
+        image = image_sd.modified_image
+
+        output = np.zeros_like(image)
+        image_padded = np.zeros((image.shape[0] + kernel - 1, image.shape[1] + kernel - 1))
+        image_padded[1:-1, 1:-1] = image
+
+        for x in range(image.shape[1]):
+            for y in range(image.shape[0]):
+                output[y, x] = np.median(image_padded[y: y + kernel, x: x + kernel])
+
+        processed_image = np.array(output)
+
+        image_sd.update(processed_image, '_median_filter')

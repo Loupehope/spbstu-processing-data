@@ -6,6 +6,7 @@ class SPDImage:
 
     def __init__(self, folder, name, extension, data, dtype):
         self.folder = folder
+        self.modified_folder = folder
         self.name = name
         self.extension = extension
         self.modified_name = name
@@ -25,3 +26,10 @@ class SPDImage:
 
     def max_type_colors_count(self) -> int:
         return np.iinfo(self.dtype).max + 1
+
+    def reset(self):
+        self.modified_image = np.array(self.original_image, copy=True)
+        self.modified_name = self.name
+
+    def copy(self):
+        return SPDImage(self.folder, self.name, self.extension, np.array(self.modified_image, copy=True), self.dtype)
