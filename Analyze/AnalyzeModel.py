@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import numba
+from Models.Fourier import *
 
 
 class AnalyzeModel:
@@ -52,30 +53,13 @@ class AnalyzeModel:
         return np.array(auto_array)
 
     @staticmethod
-    @numba.jit(nopython=True)
-    def fourier(data: np.ndarray, dt: int) -> np.ndarray:
-        x_results = []
-        y_results = []
+    def one_d_fourier(data: np.ndarray, dt) -> Fourier:
+        return Fourier(np.fft.fft(data), dt)
 
-        f_d = (1 / (2 * dt)) / (len(data) / 2)
-        f = 0
+    @staticmethod
+    def two_d_fourier(data: np.ndarray, dt) -> Fourier:
+        return Fourier(np.fft.fft2(data), dt)
 
-        half = int(len(data) / 2)
-        y_arr = data.copy()
-
-        for j in range(0, half):
-            re = 0
-            im = 0
-
-            for i in range(len(y_arr)):
-                re += y_arr[i] * math.cos(2 * math.pi * j * i / len(y_arr))
-                im += y_arr[i] * math.sin(2 * math.pi * j * i / len(y_arr))
-
-            re /= len(y_arr)
-            im /= len(y_arr)
-
-            x_results.append(f)
-            f += f_d
-            y_results.append(math.sqrt(re ** 2 + im ** 2))
-
-        return np.array([x_results, y_results])
+    @staticmethod
+    def amplitude(data: np.ndarray, dt) -> Fourier:
+        return AnalyzeModel.one_d_fourier(data, dt).amplitude()

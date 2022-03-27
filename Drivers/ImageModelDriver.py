@@ -147,7 +147,7 @@ class ImageModelDriver:
         max_auto_freq = []
         for diff in diff_im:
             auto = AnalyzeModel.auto_corr_array(diff)
-            auto_fourier = AnalyzeModel.fourier(auto, dt)
+            auto_fourier = AnalyzeModel.amplitude(auto, dt)
             max_auto_fourier_freq_idx = np.argmax(auto_fourier[1])
             max_auto_fourier_freq = auto_fourier[0][max_auto_fourier_freq_idx] // 0.01 * 0.01
             max_auto_freq.append(max_auto_fourier_freq)
@@ -157,7 +157,7 @@ class ImageModelDriver:
             row_f = diff_im[row_idx]
             row_s = diff_im[(row_idx + 1) % len(diff_im)]
             mutal = AnalyzeModel.mutual_corr_array(row_f, row_s)
-            mutal_fourier = AnalyzeModel.fourier(mutal, dt)
+            mutal_fourier = AnalyzeModel.amplitude(mutal, dt)
             max_mutal_fourier_freq_idx = np.argmax(mutal_fourier[1])
             max_mutal_fourier_freq = mutal_fourier[0][max_mutal_fourier_freq_idx] // 0.01 * 0.01
             max_mutal_freq.append(max_mutal_fourier_freq)
