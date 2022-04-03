@@ -2,6 +2,7 @@ import numpy as np
 from Models.SPDImage import *
 from PIL import Image
 import numba
+from scipy.optimize import minimize
 
 
 class HistogramModelDriver:

@@ -33,7 +33,7 @@ class ImageLesson6:
 
         loaded_image_model.modified_folder = loaded_image_model.folder + "random_noize/"
 
-        ImageModelDriver.random_noize(loaded_image_model, 10)
+        ImageModelDriver.random_noize(loaded_image_model, 20)
         ImageDisplayDriver.save(loaded_image_model)
 
         loaded_image_model_linear_filter = loaded_image_model.copy()
@@ -44,6 +44,26 @@ class ImageLesson6:
 
         loaded_image_model_median_filter = loaded_image_model.copy()
         loaded_image_model_median_filter.modified_folder = loaded_image_model.folder + "random_noize/"
+
+        ImageModelDriver.median_filter(loaded_image_model_median_filter, 3)
+        ImageDisplayDriver.save(loaded_image_model_median_filter)
+
+        loaded_image_model.reset()
+
+        loaded_image_model.modified_folder = loaded_image_model.folder + "full_noize/"
+
+        ImageModelDriver.random_noize(loaded_image_model, 20)
+        ImageModelDriver.salt_pepper(loaded_image_model, 4)
+        ImageDisplayDriver.save(loaded_image_model)
+
+        loaded_image_model_linear_filter = loaded_image_model.copy()
+        loaded_image_model_linear_filter.modified_folder = loaded_image_model.folder + "full_noize/"
+
+        ImageModelDriver.linear_filter(loaded_image_model_linear_filter, 3)
+        ImageDisplayDriver.save(loaded_image_model_linear_filter)
+
+        loaded_image_model_median_filter = loaded_image_model.copy()
+        loaded_image_model_median_filter.modified_folder = loaded_image_model.folder + "full_noize/"
 
         ImageModelDriver.median_filter(loaded_image_model_median_filter, 3)
         ImageDisplayDriver.save(loaded_image_model_median_filter)

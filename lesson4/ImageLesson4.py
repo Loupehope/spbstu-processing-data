@@ -55,7 +55,13 @@ class ImageLesson4:
             # Обрабатываем
             ImageModelDriver.rotate90(image)
             ImageModelDriver.negative(image)
+            ImageModelDriver.grayscale(image)
+            ImageDisplayDriver.save(image)
 
+            image.reset()
+
+            ImageModelDriver.rotate90(image)
+            ImageModelDriver.negative(image)
             # Считаем гистограммы
             ImageLesson4.evaluate(image)
 
