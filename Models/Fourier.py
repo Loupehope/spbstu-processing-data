@@ -23,7 +23,7 @@ class Fourier:
         return np.array([data_x, data_y])
 
     def two_d_back_transform(self):
-        return np.fft.ifft2(self.complex_data).real
+        return np.abs(np.fft.ifft2(self.complex_data))
 
     def upscale(self, a):
         scale = float((a * 100) % 100) / 100
@@ -33,7 +33,8 @@ class Fourier:
         horizontal_padding = int(scale * self.complex_data.shape[1] / 2)
 
         FT = np.pad(FT, [(vertical_padding, vertical_padding), (horizontal_padding, horizontal_padding)])
-        return np.fft.ifft2(np.fft.ifftshift(FT)).real
+
+        return np.abs(np.fft.ifft2(np.fft.ifftshift(FT)))
 
 
 

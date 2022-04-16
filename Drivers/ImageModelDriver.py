@@ -303,3 +303,27 @@ class ImageModelDriver:
         processed_image = np.array(output)
 
         image_sd.update(processed_image, '_median_filter')
+
+    # -------------------------------
+    # Лекция 9
+    # -------------------------------
+
+    @staticmethod
+    def blur_fix(image_sd: SPDImage, kernel: np.ndarray, alpha: float):
+        kernel = np.pad(
+            kernel, [
+                (0, image_sd.modified_image.shape[0] - kernel.shape[0]),
+                (0, image_sd.modified_image.shape[1] - kernel.shape[1])
+            ]
+        )
+
+        kernel_f = AnalyzeModel.two_d_fourier(kernel, 1)
+        image_sd_f = AnalyzeModel.two_d_fourier(image_sd.modified_image, 1)
+
+        diff = (np.conj(kernel_f.complex_data) / (np.abs(kernel_f.complex_data) ** 2 + alpha * alpha)) * image_sd_f.complex_data
+        diff_f = Fourier(diff, 1).two_d_back_transform()
+
+        image_sd.modified_folder = image_sd.modified_folder + image_sd.name + '/'
+        image_sd.update(diff_f, '_back_two_d_fourier')
+
+        ImageModelDriver.grayscale(image_sd)
