@@ -6,6 +6,7 @@ from lesson5.ImageLesson5 import *
 from lesson6.ImageLesson6 import *
 from lesson7.ImageLesson7 import *
 from lesson8.ImageLesson8 import *
+from lesson9.ImageLesson9 import *
 
 # ImageLesson1.run()
 # ImageLesson2.run()
@@ -14,4 +15,5 @@ from lesson8.ImageLesson8 import *
 # ImageLesson5.run()
 # ImageLesson6.run()
 # ImageLesson7.run()
-ImageLesson8.run()
+# ImageLesson8.run()
+ImageLesson9.run()

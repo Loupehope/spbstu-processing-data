@@ -327,3 +327,86 @@ class ImageModelDriver:
         image_sd.update(diff_f, '_back_two_d_fourier')
 
         ImageModelDriver.grayscale(image_sd)
+
+    # -------------------------------
+    # Лекция 9
+    # -------------------------------
+
+    @staticmethod
+    def high_pass_filter(image_sd: SPDImage, type: str, filter_radius):
+        image_sd_f = AnalyzeModel.two_d_fourier(image_sd.modified_image, 1)
+        img = np.fft.fftshift(image_sd_f.complex_data)
+
+        height, weight = img.shape
+        center_h = int(height / 2)
+        center_w = int(weight / 2)
+
+        if type == 'ideal':
+            high_pass_filter = np.ones_like(img)
+
+            for i in range(height):
+                for j in range(weight):
+                    dist_from_center = np.sqrt((i - center_h) ** 2 + (j - center_w) ** 2)
+                    if dist_from_center < filter_radius:
+                        high_pass_filter[i][j] = 0
+
+        elif type == 'gausse':
+            high_pass_filter = np.zeros_like(img)
+
+            for i in range(height):
+                for j in range(weight):
+                    dist_from_center = np.sqrt((i - center_h) ** 2 + (j - center_w) ** 2)
+                    high_pass_filter[i][j] = 1 - np.exp(-(dist_from_center ** 2) / (2 * filter_radius ** 2))
+        else:
+            return
+
+        result_f = Fourier(np.fft.ifftshift(img * high_pass_filter), image_sd_f.dt)
+        new_image = result_f.two_d_back_transform()
+
+        image_sd.modified_folder = image_sd.modified_folder + '_hpf_' + type + '_' + str(filter_radius) + '/'
+        image_sd.update(new_image, '_hpf_' + type)
+        ImageModelDriver.grayscale(image_sd)
+
+    @staticmethod
+    def low_pass_filter(image_sd: SPDImage, type: str, filter_radius):
+        image_sd_f = AnalyzeModel.two_d_fourier(image_sd.modified_image, 1)
+        img = np.fft.fftshift(image_sd_f.complex_data)
+
+        height, weight = img.shape
+        center_h = int(height / 2)
+        center_w = int(weight / 2)
+
+        if type == 'ideal':
+            low_pass_filter = np.zeros_like(img)
+
+            for i in range(height):
+                for j in range(weight):
+                    dist_from_center = np.sqrt((i - center_h) ** 2 + (j - center_w) ** 2)
+                    if dist_from_center < filter_radius:
+                        low_pass_filter[i][j] = 1
+
+        elif type == 'gausse':
+            low_pass_filter = np.zeros_like(img)
+
+            for i in range(height):
+                for j in range(weight):
+                    dist_from_center = np.sqrt((i - center_h) ** 2 + (j - center_w) ** 2)
+                    low_pass_filter[i][j] = np.exp(-(dist_from_center ** 2) / (2 * filter_radius ** 2))
+        else:
+            return
+
+        result_f = Fourier(np.fft.ifftshift(img * low_pass_filter), image_sd_f.dt)
+        new_image = result_f.two_d_back_transform()
+
+        image_sd.modified_folder = image_sd.modified_folder + '_lpf_' + type + '_' + str(filter_radius) + '/'
+        image_sd.update(new_image, '_lpf_' + type)
+        ImageModelDriver.grayscale(image_sd)
+
+    @staticmethod
+    def threshold(image_sd: SPDImage, threshold_const=127):
+        image = image_sd.modified_image
+
+        image[image > threshold_const] = np.iinfo(image_sd.dtype).max
+        image[image != np.iinfo(image_sd.dtype).max] = np.iinfo(image_sd.dtype).min
+
+        image_sd.update(image, '_threshold_' + str(threshold_const))
