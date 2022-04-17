@@ -52,8 +52,8 @@ class ImageLesson6:
 
         loaded_image_model.modified_folder = loaded_image_model.folder + "full_noize/"
 
-        ImageModelDriver.random_noize(loaded_image_model, 10)
-        ImageModelDriver.salt_pepper(loaded_image_model, 1)
+        ImageModelDriver.random_noize(loaded_image_model, 20)
+        ImageModelDriver.salt_pepper(loaded_image_model, 3)
         ImageDisplayDriver.save(loaded_image_model)
 
         loaded_image_model_linear_filter = loaded_image_model.copy()

@@ -410,3 +410,72 @@ class ImageModelDriver:
         image[image != np.iinfo(image_sd.dtype).max] = np.iinfo(image_sd.dtype).min
 
         image_sd.update(image, '_threshold_' + str(threshold_const))
+
+    # -------------------------------
+    # Лекция 10
+    # -------------------------------
+
+    @staticmethod
+    def simple_gradient(image_sd: SPDImage):
+        image = image_sd.modified_image
+        kernel = 3
+        mask = [[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]]
+
+        output = np.zeros_like(image)
+        image_padded = np.zeros((image.shape[0] + kernel - 1, image.shape[1] + kernel - 1))
+        image_padded[1:-1, 1:-1] = image
+
+        for x in range(image.shape[1]):
+            for y in range(image.shape[0]):
+                output[y, x] = np.sum((mask * image_padded[y: y + kernel, x: x + kernel]))
+
+        processed_image = np.array(output)
+
+        image_sd.modified_folder = image_sd.modified_folder + '_simple_gradient_filter/'
+        image_sd.update(processed_image, '_simple_gradient_filter')
+
+    @staticmethod
+    def sobel_gradient(image_sd: SPDImage, type=''):
+        image = image_sd.modified_image
+        kernel = 3
+
+        if type == 'horizontal':
+            mask = [
+                [[-1, -1, -1], [2, 2, 2], [-1, -1, -1]]
+            ]
+        elif type == '45':
+            mask = [
+                [[-1, -1, 2], [-1, 2, -1], [2, -1, -1]]
+            ]
+        elif type == 'vertical':
+            mask = [
+                [[-1, 2, -1], [-1, 2, -1], [-1, 2, -1]]
+            ]
+        elif type == '-45':
+            mask = [
+                [[2, -1, -1], [-1, 2, -1], [-1, -1, 2]]
+            ]
+        else:
+            mask = [
+                [[-1, -1, -1], [2, 2, 2], [-1, -1, -1]],
+                [[-1, -1, 2], [-1, 2, -1], [2, -1, -1]],
+                [[-1, 2, -1], [-1, 2, -1], [-1, 2, -1]],
+                [[2, -1, -1], [-1, 2, -1], [-1, -1, 2]]
+            ]
+
+        output = np.zeros_like(image)
+        image_padded = np.zeros((image.shape[0] + kernel - 1, image.shape[1] + kernel - 1))
+        image_padded[1:-1, 1:-1] = image
+
+        for x in range(image.shape[1]):
+            for y in range(image.shape[0]):
+                values = []
+                for i in mask:
+                    values.append(np.sum((i * image_padded[y: y + kernel, x: x + kernel])))
+
+                output[y, x] = np.max(values)
+
+        processed_image = np.array(output)
+
+        image_sd.modified_folder = image_sd.modified_folder + '_sobel_gradient_filter_' + type + '/'
+        image_sd.update(processed_image, '_sobel_gradient_filter')
