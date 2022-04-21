@@ -272,33 +272,50 @@ class ImageModelDriver:
         return np.array(result_row)
 
     @staticmethod
-    def linear_filter(image_sd: SPDImage, kernel: int):
+    def linear_filter(image_sd: SPDImage, kernel_count: int):
         image = image_sd.modified_image
-        mask = np.ones([kernel, kernel], dtype=int)
+        kernel = np.ones([kernel_count, kernel_count], dtype=int)
 
-        output = np.zeros_like(image)
-        image_padded = np.zeros((image.shape[0] + kernel - 1, image.shape[1] + kernel - 1))
-        image_padded[1:-1, 1:-1] = image
+        image_row, image_col = image.shape
+        kernel_row, kernel_col = kernel.shape
 
-        for x in range(image.shape[1]):
-            for y in range(image.shape[0]):
-                output[y, x] = np.mean((mask * image_padded[y: y + kernel, x: x + kernel]))
+        output = np.zeros(image.shape)
+
+        pad_height = int((kernel_row - 1) / 2)
+        pad_width = int((kernel_col - 1) / 2)
+
+        padded_image = np.zeros((image_row + (2 * pad_height), image_col + (2 * pad_width)))
+
+        padded_image[pad_height:padded_image.shape[0] - pad_height, pad_width:padded_image.shape[1] - pad_width] = image
+
+        for row in range(image_row):
+            for col in range(image_col):
+                output[row, col] = np.mean(kernel * padded_image[row:row + kernel_row, col:col + kernel_col])
 
         processed_image = np.array(output)
 
         image_sd.update(processed_image, '_linear_filter')
 
     @staticmethod
-    def median_filter(image_sd: SPDImage, kernel: int):
+    def median_filter(image_sd: SPDImage, kernel_count: int):
         image = image_sd.modified_image
+        kernel = np.ones([kernel_count, kernel_count], dtype=int)
 
-        output = np.zeros_like(image)
-        image_padded = np.zeros((image.shape[0] + kernel - 1, image.shape[1] + kernel - 1))
-        image_padded[1:-1, 1:-1] = image
+        image_row, image_col = image.shape
+        kernel_row, kernel_col = kernel.shape
 
-        for x in range(image.shape[1]):
-            for y in range(image.shape[0]):
-                output[y, x] = np.median(image_padded[y: y + kernel, x: x + kernel])
+        output = np.zeros(image.shape)
+
+        pad_height = int((kernel_row - 1) / 2)
+        pad_width = int((kernel_col - 1) / 2)
+
+        padded_image = np.zeros((image_row + (2 * pad_height), image_col + (2 * pad_width)))
+
+        padded_image[pad_height:padded_image.shape[0] - pad_height, pad_width:padded_image.shape[1] - pad_width] = image
+
+        for row in range(image_row):
+            for col in range(image_col):
+                output[row, col] = np.median(kernel * padded_image[row:row + kernel_row, col:col + kernel_col])
 
         processed_image = np.array(output)
 
@@ -417,65 +434,82 @@ class ImageModelDriver:
 
     @staticmethod
     def simple_gradient(image_sd: SPDImage):
-        image = image_sd.modified_image
-        kernel = 3
-        mask = [[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]]
+        mask = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
 
-        output = np.zeros_like(image)
-        image_padded = np.zeros((image.shape[0] + kernel - 1, image.shape[1] + kernel - 1))
-        image_padded[1:-1, 1:-1] = image
-
-        for x in range(image.shape[1]):
-            for y in range(image.shape[0]):
-                output[y, x] = np.sum((mask * image_padded[y: y + kernel, x: x + kernel]))
-
-        processed_image = np.array(output)
+        processed_image = ImageModelDriver.convolution_2d(image_sd, mask)
 
         image_sd.modified_folder = image_sd.modified_folder + '_simple_gradient_filter/'
         image_sd.update(processed_image, '_simple_gradient_filter')
 
     @staticmethod
-    def sobel_gradient(image_sd: SPDImage, type=''):
-        image = image_sd.modified_image
-        kernel = 3
+    def sobel_gradient(image_sd: SPDImage):
+        mask_x = np.array([
+            [-1, -2, -1], [0, 0, 0], [1, 2, 1],
+        ])
 
-        if type == 'horizontal':
-            mask = [
-                [[-1, -1, -1], [2, 2, 2], [-1, -1, -1]]
-            ]
-        elif type == '45':
-            mask = [
-                [[-1, -1, 2], [-1, 2, -1], [2, -1, -1]]
-            ]
-        elif type == 'vertical':
-            mask = [
-                [[-1, 2, -1], [-1, 2, -1], [-1, 2, -1]]
-            ]
-        elif type == '-45':
-            mask = [
-                [[2, -1, -1], [-1, 2, -1], [-1, -1, 2]]
-            ]
-        else:
-            mask = [
-                [[-1, -1, -1], [2, 2, 2], [-1, -1, -1]],
-                [[-1, -1, 2], [-1, 2, -1], [2, -1, -1]],
-                [[-1, 2, -1], [-1, 2, -1], [-1, 2, -1]],
-                [[2, -1, -1], [-1, 2, -1], [-1, -1, 2]]
-            ]
+        mask_y = np.array([
+            [-1, 0, 1], [-2, 0, 2], [-1, 0, 1]
+        ])
+
+        processed_image_x = ImageModelDriver.convolution_2d(image_sd, mask_x)
+        processed_image_y = ImageModelDriver.convolution_2d(image_sd, mask_y)
+        processed_image = np.sqrt(np.square(processed_image_x) + np.square(processed_image_y))
+
+        image_sd.modified_folder = image_sd.modified_folder + '_sobel_gradient_filter' + '/'
+        image_sd.update(processed_image, '_sobel_gradient_filter')
+
+    @staticmethod
+    def sobel_gradient_x(image_sd: SPDImage):
+        mask = np.array([
+            [-1, -2, -1], [0, 0, 0], [1, 2, 1],
+        ])
+
+        processed_image = ImageModelDriver.convolution_2d(image_sd, mask)
+
+        image_sd.modified_folder = image_sd.modified_folder + '_sobel_gradient_x_filter' + '/'
+        image_sd.update(processed_image, '_sobel_gradient_x_filter')
+
+    @staticmethod
+    def sobel_gradient_y(image_sd: SPDImage):
+        mask = np.array([
+            [-1, 0, 1], [-2, 0, 2], [-1, 0, 1]
+        ])
+
+        processed_image = ImageModelDriver.convolution_2d(image_sd, mask)
+
+        image_sd.modified_folder = image_sd.modified_folder + '_sobel_gradient_y_filter' + '/'
+        image_sd.update(processed_image, '_sobel_gradient_y_filter')
+
+    @staticmethod
+    def laplas_gradient(image_sd: SPDImage):
+        mask = np.array([
+            [0, -1, 0], [-1, 4, -1], [0, -1, 0]
+        ])
+
+        mask = np.multiply(mask, -1)
+
+        processed_image = ImageModelDriver.convolution_2d(image_sd, mask)
+
+        image_sd.modified_folder = image_sd.modified_folder + '_laplas_gradient_filter' + '/'
+        image_sd.update(processed_image, '_laplas_gradient_filter')
+
+    @staticmethod
+    def convolution_2d(image_sd: SPDImage, kernel):
+        image = image_sd.modified_image
+        image_row, image_col = image.shape
+        kernel_row, kernel_col = kernel.shape
 
         output = np.zeros_like(image)
-        image_padded = np.zeros((image.shape[0] + kernel - 1, image.shape[1] + kernel - 1))
-        image_padded[1:-1, 1:-1] = image
 
-        for x in range(image.shape[1]):
-            for y in range(image.shape[0]):
-                values = []
-                for i in mask:
-                    values.append(np.sum((i * image_padded[y: y + kernel, x: x + kernel])))
+        pad_height = int((kernel_row - 1) / 2)
+        pad_width = int((kernel_col - 1) / 2)
 
-                output[y, x] = np.max(values)
+        padded_image = np.zeros((image_row + (2 * pad_height), image_col + (2 * pad_width)))
 
-        processed_image = np.array(output)
+        padded_image[pad_height:-pad_height, pad_width:-pad_width] = image
 
-        image_sd.modified_folder = image_sd.modified_folder + '_sobel_gradient_filter_' + type + '/'
-        image_sd.update(processed_image, '_sobel_gradient_filter')
+        for row in range(image_row):
+            for col in range(image_col):
+                output[row, col] = np.sum(kernel * padded_image[row:row + kernel_row, col:col + kernel_col])
+
+        return output
