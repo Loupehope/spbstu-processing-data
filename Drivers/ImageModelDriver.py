@@ -513,3 +513,49 @@ class ImageModelDriver:
                 output[row, col] = np.sum(kernel * padded_image[row:row + kernel_row, col:col + kernel_col])
 
         return output
+
+    @staticmethod
+    def dilate(image_sd: SPDImage, dilation_level=3):
+        dilation_level = 3 if dilation_level < 3 else dilation_level
+
+        structuring_kernel = np.full(shape=(dilation_level, dilation_level), fill_value=255)
+        image_src = image_sd.modified_image
+
+        orig_shape = image_src.shape
+        pad_width = dilation_level - 2
+
+        image_pad = np.pad(array=image_src, pad_width=pad_width, mode='constant')
+        pimg_shape = image_pad.shape
+        h_reduce, w_reduce = (pimg_shape[0] - orig_shape[0]), (pimg_shape[1] - orig_shape[1])
+
+        flat_submatrices = np.array([
+            image_pad[i:(i + dilation_level), j:(j + dilation_level)]
+            for i in range(pimg_shape[0] - h_reduce) for j in range(pimg_shape[1] - w_reduce)
+        ])
+
+        image_dilate = np.array([255 if (i == structuring_kernel).any() else 0 for i in flat_submatrices])
+        image_dilate = image_dilate.reshape(orig_shape)
+        image_sd.update(image_dilate, '_dilate_')
+
+    @staticmethod
+    def erode(image_sd: SPDImage, erosion_level=3):
+        erosion_level = 3 if erosion_level < 3 else erosion_level
+
+        structuring_kernel = np.full(shape=(erosion_level, erosion_level), fill_value=255)
+        image_src = image_sd.modified_image
+
+        orig_shape = image_src.shape
+        pad_width = erosion_level - 2
+
+        image_pad = np.pad(array=image_src, pad_width=pad_width, mode='constant')
+        pimg_shape = image_pad.shape
+        h_reduce, w_reduce = (pimg_shape[0] - orig_shape[0]), (pimg_shape[1] - orig_shape[1])
+
+        flat_submatrices = np.array([
+            image_pad[i:(i + erosion_level), j:(j + erosion_level)]
+            for i in range(pimg_shape[0] - h_reduce) for j in range(pimg_shape[1] - w_reduce)
+        ])
+
+        image_erode = np.array([255 if (i == structuring_kernel).all() else 0 for i in flat_submatrices])
+        image_erode = image_erode.reshape(orig_shape)
+        image_sd.update(image_erode, '_erode_')
