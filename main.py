@@ -18,6 +18,6 @@ from lesson11.ImageLesson11 import *
 # ImageLesson6.run()
 # ImageLesson7.run()
 # ImageLesson8.run()
-# ImageLesson9.run()
+ImageLesson9.run()
 # ImageLesson10.run()
-ImageLesson11.run()
+# ImageLesson11.run()

@@ -37,6 +37,6 @@ class ImageLesson8:
         )
 
         ImageDisplayDriver.save(loaded_image_blur259x185L)
-        ImageModelDriver.blur_fix(loaded_image_blur259x185L, kernL64_f4, 1.5)
+        ImageModelDriver.blur_fix(loaded_image_blur259x185L, kernL64_f4, 2)
         ImageDisplayDriver.save(loaded_image_blur259x185L)
 

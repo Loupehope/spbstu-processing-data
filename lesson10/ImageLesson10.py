@@ -22,15 +22,16 @@ class ImageLesson10:
         loaded_image_model_y = loaded_image_model.copy()
         loaded_image_model_y.modified_folder = loaded_image_model.modified_folder
 
-        ImageModelDriver.sobel_gradient(loaded_image_model)
+        ImageModelDriver.simple_gradient(loaded_image_model)
         # ImageDisplayDriver.save(loaded_image_model)
 
-        ImageModelDriver.sobel_gradient_x(loaded_image_model_x)
-        ImageModelDriver.sobel_gradient_y(loaded_image_model_y)
+        ImageModelDriver.simple_gradient_x(loaded_image_model_x)
+        ImageModelDriver.simple_gradient_y(loaded_image_model_y)
 
         ImageModelDriver.grayscale(loaded_image_model)
         ImageModelDriver.grayscale(loaded_image_model_x)
         ImageModelDriver.grayscale(loaded_image_model_y)
+        ImageModelDriver.threshold(loaded_image_model, 20)
 
         ImageDisplayDriver.save(loaded_image_model)
         ImageDisplayDriver.save(loaded_image_model_x)
@@ -46,8 +47,8 @@ class ImageLesson10:
         ImageModelDriver.low_pass_filter(loaded_image_model, 'gausse', 60)
         ImageModelDriver.threshold(loaded_image_model, 200)
 
-        ImageModelDriver.sobel_gradient(loaded_image_model)
-        # ImageDisplayDriver.save(loaded_image_model)
+        ImageModelDriver.simple_gradient(loaded_image_model)
+        ImageDisplayDriver.save(loaded_image_model)
 
         ImageModelDriver.grayscale(loaded_image_model)
 
@@ -63,8 +64,8 @@ class ImageLesson10:
         ImageModelDriver.low_pass_filter(loaded_image_model, 'gausse', 60)
         ImageModelDriver.threshold(loaded_image_model, 200)
 
-        ImageModelDriver.sobel_gradient(loaded_image_model)
-        # ImageDisplayDriver.save(loaded_image_model)
+        ImageModelDriver.simple_gradient(loaded_image_model)
+        ImageDisplayDriver.save(loaded_image_model)
 
         ImageModelDriver.grayscale(loaded_image_model)
 
@@ -80,8 +81,8 @@ class ImageLesson10:
         ImageModelDriver.low_pass_filter(loaded_image_model, 'gausse', 60)
         ImageModelDriver.threshold(loaded_image_model, 200)
 
-        ImageModelDriver.sobel_gradient(loaded_image_model)
-        # ImageDisplayDriver.save(loaded_image_model)
+        ImageModelDriver.simple_gradient(loaded_image_model)
+        ImageDisplayDriver.save(loaded_image_model)
 
         ImageModelDriver.grayscale(loaded_image_model)
 

@@ -8,12 +8,11 @@ from scipy.optimize import minimize
 class HistogramModelDriver:
 
     @staticmethod
-    @numba.jit(nopython=True)
     def histogram(image: np.ndarray, pixel_colors_count: int) -> (np.ndarray, str):
         h = [0] * pixel_colors_count
         for x in range(image.shape[0]):
             for y in range(image.shape[1]):
-                i = image[x, y]
+                i = int(image[x, y])
                 h[i] = h[i] + 1
         return np.array(h), '_hist'
 

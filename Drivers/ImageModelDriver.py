@@ -434,12 +434,42 @@ class ImageModelDriver:
 
     @staticmethod
     def simple_gradient(image_sd: SPDImage):
-        mask = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]])
+        mask_x = np.array([
+            [-1, -1, -1], [0, 0, 0], [1, 1, 1],
+        ])
 
-        processed_image = ImageModelDriver.convolution_2d(image_sd, mask)
+        mask_y = np.array([
+            [-1, 0, 1], [-1, 0, 1], [-1, 0, 1]
+        ])
+
+        processed_image_x = ImageModelDriver.convolution_2d(image_sd, mask_x)
+        processed_image_y = ImageModelDriver.convolution_2d(image_sd, mask_y)
+        processed_image = np.sqrt(np.square(processed_image_x) + np.square(processed_image_y))
 
         image_sd.modified_folder = image_sd.modified_folder + '_simple_gradient_filter/'
         image_sd.update(processed_image, '_simple_gradient_filter')
+
+    @staticmethod
+    def simple_gradient_x(image_sd: SPDImage):
+        mask = np.array([
+            [-1, -1, -1], [0, 0, 0], [1, 1, 1],
+        ])
+
+        processed_image = ImageModelDriver.convolution_2d(image_sd, mask)
+
+        image_sd.modified_folder = image_sd.modified_folder + '_simple_gradient_x_filter' + '/'
+        image_sd.update(processed_image, '_simple_gradient_x_filter')
+
+    @staticmethod
+    def simple_gradient_y(image_sd: SPDImage):
+        mask = np.array([
+            [-1, 0, 1], [-1, 0, 1], [-1, 0, 1]
+        ])
+
+        processed_image = ImageModelDriver.convolution_2d(image_sd, mask)
+
+        image_sd.modified_folder = image_sd.modified_folder + '_simple_gradient_y_filter' + '/'
+        image_sd.update(processed_image, '_simple_gradient_y_filter')
 
     @staticmethod
     def sobel_gradient(image_sd: SPDImage):
@@ -457,6 +487,8 @@ class ImageModelDriver:
 
         image_sd.modified_folder = image_sd.modified_folder + '_sobel_gradient_filter' + '/'
         image_sd.update(processed_image, '_sobel_gradient_filter')
+
+
 
     @staticmethod
     def sobel_gradient_x(image_sd: SPDImage):

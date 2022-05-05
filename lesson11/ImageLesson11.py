@@ -1,6 +1,8 @@
 from Drivers.ImageModelDriver import *
 from Drivers.ImageDisplayDriver import *
 from Drivers.ReadDriver import *
+from Drivers.HistogramModelDriver import *
+from Drivers.PlotDriver import *
 
 class ImageLesson11:
 
@@ -10,6 +12,13 @@ class ImageLesson11:
         def dilate_and_erode(image_sd: SPDImage):
             # Убираем шум
             ImageModelDriver.low_pass_filter(loaded_image_model, 'gausse', 60)
+
+            histogram = HistogramModelDriver.histogram(
+                image_sd.modified_image,
+                image_sd.max_type_colors_count()
+            )
+            PlotDriver.plot(histogram, image_sd, 'original_')
+
             ImageModelDriver.threshold(loaded_image_model, 200)
 
             original_image = image_sd.copy()
