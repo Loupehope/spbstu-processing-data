@@ -595,6 +595,35 @@ class ImageModelDriver:
         image_erode = np.array([255 if (i == structuring_kernel).all() else 0 for i in flat_submatrices])
         image_erode = image_erode.reshape(orig_shape)
         image_sd.update(image_erode, '_erode_')
+
+    @staticmethod
+    def otsu(image: SPDImage):
+        gray = image.modified_image
+        pixel_number = gray.shape[0] * gray.shape[1]
+        mean_weigth = 1.0 / pixel_number
+        his, bins = np.histogram(gray, np.array(range(0, 256)))
+        final_thresh = -1
+        final_value = -1
+        for t in bins[1:-1]:  # This goes from 1 to 254 uint8 range (Pretty sure wont be those values)
+            Wb = np.sum(his[:t]) * mean_weigth
+            Wf = np.sum(his[t:]) * mean_weigth
+
+            mub = np.mean(his[:t])
+            muf = np.mean(his[t:])
+
+            value = Wb * Wf * (mub - muf) ** 2
+
+            if value > final_value:
+                final_thresh = t
+                final_value = value
+
+        final_img = gray.copy()
+        final_img[gray > final_thresh] = 255
+        final_img[gray < final_thresh] = 0
+
+        final_img[final_img > 230] = 255
+        final_img[final_img != 255] = 0
+
         image.update(final_img, '_otsu')
 
     @staticmethod
