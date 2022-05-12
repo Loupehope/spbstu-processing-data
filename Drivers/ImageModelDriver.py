@@ -2,11 +2,14 @@ from Models.SPDImage import *
 from Analyze.AnalyzeModel import *
 from PIL import Image
 from Analyze.Filters import *
+from Drivers.HistogramModelDriver import *
 
 import numpy as np
 import numba
 import random
 import cv2
+from scipy import misc,ndimage
+from ctypes import *
 
 
 class ImageModelDriver:
@@ -95,7 +98,7 @@ class ImageModelDriver:
         result_array = []
 
         for row in data.modified_image:
-            y_array = [const * (np.power(y, gamma)) for y in row]
+            y_array = np.array([const * (np.power(y, gamma)) for y in row])
             result_array.append(y_array)
 
         data.update(np.array(result_array), '_gamma_correction')
@@ -107,7 +110,7 @@ class ImageModelDriver:
         result_array = []
 
         for row in data.modified_image:
-            y_array = [const * (np.log10(y + 1)) for y in row]
+            y_array = [const * (np.log(y + 1)) for y in row]
             result_array.append(y_array)
 
         data.update(np.array(result_array), '_log_correction')
@@ -515,12 +518,13 @@ class ImageModelDriver:
     @staticmethod
     def laplas_gradient(image_sd: SPDImage):
         mask = np.array([
-            [0, -1, 0], [-1, 4, -1], [0, -1, 0]
+            [-1, -1, -1], [-1, 8, -1], [-1, -1, -1]
         ])
 
-        mask = np.multiply(mask, -1)
-
         processed_image = ImageModelDriver.convolution_2d(image_sd, mask)
+
+        ShF = 100
+        processed_image = processed_image * ShF / np.amax(processed_image)
 
         image_sd.modified_folder = image_sd.modified_folder + '_laplas_gradient_filter' + '/'
         image_sd.update(processed_image, '_laplas_gradient_filter')
@@ -591,3 +595,28 @@ class ImageModelDriver:
         image_erode = np.array([255 if (i == structuring_kernel).all() else 0 for i in flat_submatrices])
         image_erode = image_erode.reshape(orig_shape)
         image_sd.update(image_erode, '_erode_')
+        image.update(final_img, '_otsu')
+
+    @staticmethod
+    def automatic_brightness_and_contrast(image: SPDImage, clip_hist_percent=1):
+        hist = HistogramModelDriver.histogram(image.modified_image, image.max_type_colors_count())[0]
+        accumulator = HistogramModelDriver.cdf(hist)[0]
+        maximum = accumulator[-1]
+        clip_hist_percent *= (maximum / 100.0)
+
+        minimum_gray = 0
+        while accumulator[minimum_gray] < clip_hist_percent:
+            minimum_gray += 1
+
+        maximum_gray = len(hist) - 1
+        while accumulator[maximum_gray] >= (maximum - clip_hist_percent):
+            maximum_gray -= 1
+
+        median = np.median(accumulator)
+        medium_gray = 0
+        while accumulator[medium_gray] < median:
+            medium_gray += 1
+
+        gamma = np.log(np.abs(medium_gray - minimum_gray)/np.abs(maximum_gray - medium_gray))
+        print(gamma)
+        ImageModelDriver.gamma_correction(image, 1, gamma)

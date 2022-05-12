@@ -14,10 +14,11 @@ class ImageLesson4:
             image.max_type_colors_count()
         )
         cdf = HistogramModelDriver.cdf(histogram[0])
+        cdf_inverse = HistogramModelDriver.inverse_cdf(cdf[0])
 
         PlotDriver.plot(histogram, image, 'original_')
         PlotDriver.plot(cdf, image, 'original_')
-
+        PlotDriver.plot_by_x_and_y(cdf_inverse, image.folder + 'inv_' + image.name + '/', 'test')
         # Эквализация гистограммы
         HistogramModelDriver.equalize_image(image)
 
@@ -43,12 +44,12 @@ class ImageLesson4:
         # ----------------------
 
         loaded_rengens = [
-            ReadDriver.image_binary_read(
-                'lesson4/', 'c12-85v', '.jpg', '>H', 1024, 1024, 5120
-            ),
-            ReadDriver.image_binary_read(
-                'lesson4/', 'u0', '.jpg', '>H', 2048, 2500, 5120
-            )
+            # ReadDriver.image_binary_read(
+            #     'lesson4/', 'c12-85v', '.jpg', '>H', 1024, 1024, 5120
+            # ),
+            # ReadDriver.image_binary_read(
+            #     'lesson4/', 'u0', '.jpg', '>H', 2048, 2500, 5120
+            # )
         ]
 
         for image in loaded_rengens:
@@ -72,10 +73,10 @@ class ImageLesson4:
         loaded_jpgs = [
             SPDImage.fromFile('lesson4/', 'photo1', '.jpg', np.uint8),
             SPDImage.fromFile('lesson4/', 'photo2', '.jpg', np.uint8),
-            SPDImage.fromFile('lesson4/', 'photo3', '.jpg', np.uint8),
-            SPDImage.fromFile('lesson4/', 'photo4', '.jpg', np.uint8),
-            SPDImage.fromFile('lesson4/', 'grace', '.jpg', np.uint8),
-            SPDImage.fromFile('lesson4/', 'HollywoodLC', '.jpg', np.uint8)
+            # SPDImage.fromFile('lesson4/', 'photo3', '.jpg', np.uint8),
+            # SPDImage.fromFile('lesson4/', 'photo4', '.jpg', np.uint8),
+            # SPDImage.fromFile('lesson4/', 'grace', '.jpg', np.uint8),
+            # SPDImage.fromFile('lesson4/', 'HollywoodLC', '.jpg', np.uint8)
         ]
 
         for image in loaded_jpgs:
