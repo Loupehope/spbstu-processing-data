@@ -23,5 +23,5 @@ from lesson13.ImageLesson13 import *
 # ImageLesson9.run()
 # ImageLesson10.run()
 # ImageLesson11.run()
-ImageLesson12.run()
-# ImageLesson13.run()
+# ImageLesson12.run()
+ImageLesson13.run()

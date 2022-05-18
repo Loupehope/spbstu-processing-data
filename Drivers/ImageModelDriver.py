@@ -1,16 +1,10 @@
-from Models.SPDImage import *
 from Analyze.AnalyzeModel import *
-from PIL import Image
 from Analyze.Filters import *
 from Drivers.HistogramModelDriver import *
 
 import numpy as np
 import numba
 import random
-import cv2
-from scipy import misc,ndimage
-from ctypes import *
-
 
 class ImageModelDriver:
 
@@ -597,8 +591,31 @@ class ImageModelDriver:
         image_sd.update(image_erode, '_erode_')
 
     @staticmethod
-    def otsu(image: SPDImage):
-        gray = image.modified_image
+    def erode_raw(image_sd, erosion_level=3):
+        erosion_level = 3 if erosion_level < 3 else erosion_level
+
+        structuring_kernel = np.full(shape=(erosion_level, erosion_level), fill_value=255)
+        image_src = image_sd
+
+        orig_shape = image_src.shape
+        pad_width = erosion_level - 2
+
+        image_pad = np.pad(array=image_src, pad_width=pad_width, mode='constant')
+        pimg_shape = image_pad.shape
+        h_reduce, w_reduce = (pimg_shape[0] - orig_shape[0]), (pimg_shape[1] - orig_shape[1])
+
+        flat_submatrices = np.array([
+            image_pad[i:(i + erosion_level), j:(j + erosion_level)]
+            for i in range(pimg_shape[0] - h_reduce) for j in range(pimg_shape[1] - w_reduce)
+        ])
+
+        image_erode = np.array([255 if (i == structuring_kernel).all() else 0 for i in flat_submatrices])
+        image_erode = image_erode.reshape(orig_shape)
+        return image_erode
+
+    @staticmethod
+    def otsu(image):
+        gray = image
         pixel_number = gray.shape[0] * gray.shape[1]
         mean_weigth = 1.0 / pixel_number
         his, bins = np.histogram(gray, np.array(range(0, 256)))
@@ -624,7 +641,7 @@ class ImageModelDriver:
         final_img[final_img > 230] = 255
         final_img[final_img != 255] = 0
 
-        image.update(final_img, '_otsu')
+        return  final_img
 
     @staticmethod
     def automatic_brightness_and_contrast(image: SPDImage, clip_hist_percent=1):
@@ -646,6 +663,6 @@ class ImageModelDriver:
         while accumulator[medium_gray] < median:
             medium_gray += 1
 
-        gamma = np.log(np.abs(medium_gray - minimum_gray)/np.abs(maximum_gray - medium_gray))
+        gamma = np.log(np.abs(medium_gray - minimum_gray))
         print(gamma)
         ImageModelDriver.gamma_correction(image, 1, gamma)
